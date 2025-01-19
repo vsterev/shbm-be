@@ -1,0 +1,2187 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"IUserToken": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"isAdmin": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"_id",
+					"email",
+					"name",
+					"isAdmin"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUser": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"isAdmin": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"_id",
+					"email",
+					"name",
+					"password",
+					"isAdmin"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IParsingHotelResponse": {
+				"properties": {
+					"Hotel": {
+						"type": "string"
+					},
+					"HotelID": {
+						"type": "number",
+						"format": "double"
+					},
+					"HotelServer": {
+						"type": "string"
+					},
+					"PMS_ServerID": {
+						"type": "number",
+						"format": "double"
+					},
+					"ServerName": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"Hotel",
+					"HotelID",
+					"HotelServer",
+					"PMS_ServerID",
+					"ServerName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMessage": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"sender": {
+						"type": "string"
+					},
+					"isRead": {
+						"type": "boolean"
+					},
+					"text": {
+						"type": "string"
+					},
+					"isOutgoing": {
+						"type": "boolean"
+					},
+					"dateCreate": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"isRead",
+					"text",
+					"isOutgoing",
+					"dateCreate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IParserBooking": {
+				"properties": {
+					"Hotel": {
+						"type": "string"
+					},
+					"RoomType": {
+						"type": "string"
+					},
+					"CheckIn": {
+						"type": "string"
+					},
+					"CheckOut": {
+						"type": "string"
+					},
+					"Booked": {
+						"type": "string"
+					},
+					"Voucher": {
+						"type": "string"
+					},
+					"Board": {
+						"type": "string"
+					},
+					"Market": {
+						"type": "string"
+					},
+					"Remark": {
+						"type": "string"
+					},
+					"Status": {
+						"type": "string"
+					},
+					"Comments": {
+						"type": "string"
+					},
+					"Flight_Arr": {
+						"type": "string"
+					},
+					"Flight_Arr_Time": {
+						"type": "string"
+					},
+					"Flight_Dep": {
+						"type": "string"
+					},
+					"Flight_Dep_Time": {
+						"type": "string"
+					},
+					"Names": {
+						"items": {
+							"properties": {
+								"birthDate": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"Hotel",
+					"RoomType",
+					"CheckIn",
+					"CheckOut",
+					"Booked",
+					"Voucher",
+					"Board",
+					"Market",
+					"Status",
+					"Names"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IParserBookingResponse": {
+				"properties": {
+					"Adults": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age1": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age2": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age3": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age4": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age5": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age6": {
+						"type": "number",
+						"format": "double"
+					},
+					"Age7": {
+						"type": "number",
+						"format": "double"
+					},
+					"Board": {
+						"type": "string"
+					},
+					"CheckIn": {
+						"type": "string"
+					},
+					"CheckOut": {
+						"type": "string"
+					},
+					"Children": {
+						"type": "number",
+						"format": "double"
+					},
+					"ConfirmationNo": {
+						"type": "string"
+					},
+					"Hotel": {
+						"type": "string"
+					},
+					"Name1": {
+						"type": "string"
+					},
+					"Name2": {
+						"type": "string"
+					},
+					"Name3": {
+						"type": "string"
+					},
+					"Name4": {
+						"type": "string"
+					},
+					"Name5": {
+						"type": "string"
+					},
+					"Name6": {
+						"type": "string"
+					},
+					"Name7": {
+						"type": "string"
+					},
+					"PriceAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"PriceCurrency": {
+						"type": "string"
+					},
+					"ResponseText": {
+						"type": "string"
+					},
+					"ResvID": {
+						"type": "number",
+						"format": "double"
+					},
+					"RoomType": {
+						"type": "string"
+					},
+					"Vocher": {
+						"type": "string"
+					},
+					"isCancelled": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"Adults",
+					"Age1",
+					"Board",
+					"CheckIn",
+					"CheckOut",
+					"Children",
+					"ConfirmationNo",
+					"Hotel",
+					"Name1",
+					"PriceAmount",
+					"PriceCurrency",
+					"ResponseText",
+					"ResvID",
+					"RoomType",
+					"Vocher",
+					"isCancelled"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ITourist": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"birthDate": {
+						"type": "string"
+					},
+					"sex": {
+						"type": "string"
+					},
+					"hotelServiceId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IHotelServiceBooking": {
+				"properties": {
+					"serviceId": {
+						"type": "number",
+						"format": "double"
+					},
+					"serviceName": {
+						"type": "string"
+					},
+					"bookingCode": {
+						"type": "string"
+					},
+					"hotelId": {
+						"type": "number",
+						"format": "double"
+					},
+					"hotel": {
+						"type": "string"
+					},
+					"pansionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"pansion": {
+						"type": "string"
+					},
+					"roomTypeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"roomType": {
+						"type": "string"
+					},
+					"roomMapCode": {
+						"type": "string"
+					},
+					"roomAccommodationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"roomAccommodation": {
+						"type": "string"
+					},
+					"roomCategoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"roomCategory": {
+						"type": "string"
+					},
+					"confirmationNumber": {
+						"type": "string"
+					},
+					"checkIn": {
+						"type": "string"
+					},
+					"checkOut": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					},
+					"note": {
+						"type": "string"
+					},
+					"tourists": {
+						"items": {
+							"$ref": "#/components/schemas/ITourist"
+						},
+						"type": "array"
+					},
+					"priceRemark": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"serviceId",
+					"serviceName",
+					"bookingCode",
+					"hotelId",
+					"hotel",
+					"pansionId",
+					"pansion",
+					"roomTypeId",
+					"roomType",
+					"roomMapCode",
+					"roomAccommodationId",
+					"roomAccommodation",
+					"roomCategoryId",
+					"roomCategory",
+					"confirmationNumber",
+					"checkIn",
+					"checkOut",
+					"status",
+					"note",
+					"tourists"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IFlight": {
+				"properties": {
+					"flightArr": {
+						"type": "string"
+					},
+					"flightDep": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"flightArr",
+					"flightDep"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IBooking": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"bookingName": {
+						"type": "string"
+					},
+					"bookingId": {
+						"type": "number",
+						"format": "double"
+					},
+					"action": {
+						"type": "string"
+					},
+					"creationDate": {
+						"type": "string"
+					},
+					"cancelDate": {
+						"type": "string"
+					},
+					"changeDate": {
+						"type": "string"
+					},
+					"marketId": {
+						"type": "number",
+						"format": "double"
+					},
+					"marketName": {
+						"type": "string"
+					},
+					"messages": {
+						"items": {
+							"$ref": "#/components/schemas/IMessage"
+						},
+						"type": "array"
+					},
+					"parser": {
+						"properties": {
+							"manual": {
+								"properties": {},
+								"additionalProperties": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"booking": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message",
+										"booking"
+									],
+									"type": "object"
+								},
+								"type": "object"
+							},
+							"response": {
+								"$ref": "#/components/schemas/IParserBookingResponse"
+							},
+							"send": {
+								"$ref": "#/components/schemas/IParserBooking"
+							}
+						},
+						"required": [
+							"manual",
+							"response",
+							"send"
+						],
+						"type": "object"
+					},
+					"hotelService": {
+						"$ref": "#/components/schemas/IHotelServiceBooking"
+					},
+					"hotelServices": {
+						"items": {
+							"$ref": "#/components/schemas/IHotelServiceBooking"
+						},
+						"type": "array"
+					},
+					"flightInfo": {
+						"$ref": "#/components/schemas/IFlight"
+					},
+					"dateInputed": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"bookingName",
+					"bookingId",
+					"action",
+					"marketId",
+					"marketName",
+					"messages",
+					"hotelServices"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IBoard": {
+				"properties": {
+					"boardId": {
+						"type": "number",
+						"format": "double"
+					},
+					"boardName": {
+						"type": "string"
+					},
+					"parserCode": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"boardId",
+					"boardName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IRoom": {
+				"properties": {
+					"roomTypeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"roomTypeName": {
+						"type": "string"
+					},
+					"roomCategoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"roomCategoryName": {
+						"type": "string"
+					},
+					"parserCode": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"roomTypeId",
+					"roomTypeName",
+					"roomCategoryId",
+					"roomCategoryName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IHotelMap": {
+				"properties": {
+					"_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"hotelId": {
+						"type": "number",
+						"format": "double"
+					},
+					"hotelName": {
+						"type": "string"
+					},
+					"hotelCode": {
+						"type": "string"
+					},
+					"cityId": {
+						"type": "number",
+						"format": "double"
+					},
+					"cityName": {
+						"type": "string"
+					},
+					"boards": {
+						"properties": {},
+						"additionalProperties": {
+							"$ref": "#/components/schemas/IBoard"
+						},
+						"type": "object"
+					},
+					"rooms": {
+						"properties": {},
+						"additionalProperties": {
+							"$ref": "#/components/schemas/IRoom"
+						},
+						"type": "object"
+					},
+					"parserCode": {
+						"type": "number",
+						"format": "double"
+					},
+					"parserName": {
+						"type": "string"
+					},
+					"parserHotelServer": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"hotelId",
+					"hotelName",
+					"cityId",
+					"cityName",
+					"boards",
+					"rooms"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IHotel": {
+				"properties": {
+					"_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"resort": {
+						"type": "string"
+					},
+					"code": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"regionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"resortId": {
+						"type": "number",
+						"format": "double"
+					},
+					"parserCode": {
+						"type": "number",
+						"format": "double"
+					},
+					"parserName": {
+						"type": "string"
+					},
+					"parserHotelServer": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"resort",
+					"code",
+					"category",
+					"regionId",
+					"resortId",
+					"parserHotelServer"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			},
+			"jwt-passport": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	},
+	"info": {
+		"title": "hotels-api",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Vassil Shterev ",
+			"email": "vsterev@gmail.com"
+		}
+	},
+	"paths": {
+		"/user/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"userData": {
+											"$ref": "#/components/schemas/IUserToken"
+										},
+										"token": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"userData",
+										"token"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/verify": {
+			"get": {
+				"operationId": "VerifyLogin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IUserToken"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user/users": {
+			"get": {
+				"operationId": "GetAllUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IUser"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/user": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"403": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"isAdmin": {
+										"type": "boolean"
+									},
+									"password": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"isAdmin",
+									"password",
+									"name",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"403": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"operationId": "EditUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"403": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"isAdmin": {
+										"type": "boolean"
+									},
+									"password": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email",
+									"_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/parser/hotels-compare": {
+			"get": {
+				"operationId": "HotelCompare",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"interlookHotels": {},
+										"parserHotels": {
+											"items": {
+												"allOf": [
+													{
+														"$ref": "#/components/schemas/IParsingHotelResponse"
+													},
+													{
+														"properties": {
+															"mapped": {
+																"type": "boolean"
+															}
+														},
+														"required": [
+															"mapped"
+														],
+														"type": "object"
+													}
+												]
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"interlookHotels",
+										"parserHotels"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"parser"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/parser/hotel-props": {
+			"post": {
+				"operationId": "GetHotelProps",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"rooms": {
+											"items": {},
+											"type": "array"
+										},
+										"boards": {
+											"items": {},
+											"type": "array"
+										}
+									},
+									"required": [
+										"rooms",
+										"boards"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"parser"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"parserCode": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"parserCode"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/parser/reports": {
+			"post": {
+				"operationId": "GetReports",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"parser"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"limit": {
+										"type": "number",
+										"format": "double"
+									},
+									"skip": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/il/get-cities": {
+			"get": {
+				"operationId": "GetCities",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"interlook"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/il/get-bookings": {
+			"post": {
+				"operationId": "GetBookings",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IBooking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"interlook"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"next": {
+										"type": "boolean"
+									},
+									"action": {
+										"type": "string",
+										"enum": [
+											"new",
+											"change",
+											"cancel"
+										]
+									}
+								},
+								"required": [
+									"next",
+									"action"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/il/send-bookings": {
+			"post": {
+				"operationId": "SendBookings",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"cancelled": {
+											"type": "number",
+											"format": "double"
+										},
+										"notConfirmed": {
+											"type": "number",
+											"format": "double"
+										},
+										"confirmed": {
+											"type": "number",
+											"format": "double"
+										},
+										"sended": {
+											"type": "number",
+											"format": "double"
+										},
+										"errors": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"cancelled",
+										"notConfirmed",
+										"confirmed",
+										"sended",
+										"errors"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"interlook"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"bookings": {
+										"items": {
+											"$ref": "#/components/schemas/IBooking"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"bookings"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hotels/mapping-variants": {
+			"get": {
+				"operationId": "GetVariants",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IHotelMap"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "ilCode",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "parserCode",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateHotelVariant",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"checkOut": {
+										"type": "string"
+									},
+									"checkIn": {
+										"type": "string"
+									},
+									"ilCode": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"checkOut",
+									"checkIn",
+									"ilCode"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"operationId": "HotelMapProperties",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IHotelMap"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"hotelId": {
+										"type": "number",
+										"format": "double"
+									},
+									"rooms": {},
+									"boards": {}
+								},
+								"required": [
+									"hotelId",
+									"rooms",
+									"boards"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteHotelMap",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"hotelId": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"hotelId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hotels/mapped": {
+			"get": {
+				"operationId": "GetAllMapped",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/hotels": {
+			"get": {
+				"operationId": "FindHotelByname",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IHotel"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "hotelName",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "HotelMap",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IHotel"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"hotels"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"hotelId": {
+										"type": "number",
+										"format": "double"
+									},
+									"parserCode": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"hotelId",
+									"parserCode"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/bookings": {
+			"get": {
+				"operationId": "GetAllBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IBooking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"bookings"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "skip",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "isByDate",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"yes",
+								"no"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "booking",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "dateTo",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "dateFrom",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/bookings/length": {
+			"get": {
+				"operationId": "GetLength",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "number",
+									"format": "double"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"bookings"
+				],
+				"security": [
+					{
+						"jwt-passport": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "skip",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "isByDate",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"yes",
+								"no"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "booking",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "dateTo",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "dateFrom",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/bookings/confirm": {
+			"post": {
+				"operationId": "ConfirmBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"message": {
+										"type": "string"
+									},
+									"confirmationNumber": {
+										"type": "string"
+									},
+									"booking": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"message",
+									"confirmationNumber",
+									"booking"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/bookings/deny": {
+			"post": {
+				"operationId": "DenyBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"error": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"message": {
+										"type": "string"
+									},
+									"booking": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"message",
+									"booking"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api/v1"
+		}
+	]
+}

@@ -1,0 +1,32 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/**/*"],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3,
+    "basePath": "/api/v1",
+    "securityDefinitions": {
+      "jwt": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      },
+      "jwt-passport": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "routes": {
+    "routesDir": "build",
+    "middleware": "express",
+    "basePath": "/api/v1",
+    "authenticationModule": "./src/middlewares/auth-passport.middleware.ts"
+  },
+  "models": {
+		"basePath": "./src/models"
+	},
+	"ignore": ["**/node_modules/**"]
+}
