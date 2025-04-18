@@ -1,18 +1,18 @@
 import passport from "passport";
-import passportJWT, { StrategyOptionsWithoutRequest } from "passport-jwt";
+import passportJWT, { Strategy, StrategyOptionsWithoutRequest } from "passport-jwt";
+import { Strategy as BearerStrategy } from "passport-http-bearer";
 import envVariables from "./envVariables";
 import userModel from "../models/user";
 import { IUserToken } from "../interfaces/user.interface";
 
 const ExtractJwt = passportJWT.ExtractJwt;
-const JwtStrategy = passportJWT.Strategy;
 
 const jwtOptions: StrategyOptionsWithoutRequest = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("Bearer"),
   secretOrKey: envVariables.API_TOKEN_SECRET,
 };
 
-const strategy = new JwtStrategy(jwtOptions, async function (
+const jwtStrategy = new Strategy(jwtOptions, async function (
   jwt_payload,
   done,
 ) {
@@ -31,6 +31,20 @@ const strategy = new JwtStrategy(jwtOptions, async function (
   }
 });
 
-passport.use("jwt-passport", strategy);
+// Bearer Token Strategy
+const bearerStrategy = new BearerStrategy(async (token, done) => {
+  try {
+    if (token === envVariables.API_TOKEN) {
+      return done(null, "api");
+    } else {
+      return done(null, false);
+    }
+  } catch (error) {
+    return done(error, false);
+  }
+});
+
+passport.use("jwt-passport", jwtStrategy);
+passport.use("api-token", bearerStrategy);
 
 export default passport;

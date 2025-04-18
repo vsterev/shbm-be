@@ -32,8 +32,12 @@ const hotelSchema = new mongoose.Schema(
       type: Number,
     },
     parserCode: { type: Number, required: false },
-    parserName: { type: String, required: false },
-    parserHotelServer: { type: String, required: false },
+    integrationSettings: {
+      apiName: String,
+      hotelCode: Number,
+      type: Map,
+      of: mongoose.Schema.Types.Mixed,
+    }
   },
   { timestamps: true, strict: true },
 );

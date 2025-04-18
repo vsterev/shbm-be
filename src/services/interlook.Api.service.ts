@@ -7,7 +7,7 @@ import { IRoomType } from "../interfaces/roomType.interface";
 import { IBoard } from "../interfaces/board.interface";
 import redis from "../config/redis.config";
 import logger from "../utils/logger";
-import hotelMapModel from "../models/hotelMap";
+import accomodationMap from "../models/accommodationMap";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const parser = new xml2js.Parser();
@@ -36,7 +36,7 @@ export default class InterlookServiceAPI {
 
       const token =
         xml["soap:Envelope"]["soap:Body"][0]["ConnectResponse"][0][
-          "ConnectResult"
+        "ConnectResult"
         ][0];
       if (!token || token.includes("Invalid login or password")) {
         throw new Error("Invalid login or password");
@@ -49,12 +49,12 @@ export default class InterlookServiceAPI {
     }
   }
   private static async retrieveToken() {
-    let token = await redis.get("hotelServiceToken");
+    let token = await redis.get("interlookToken");
     if (!token) {
       token = (await this.connect()) ?? null;
     }
     if (!token) {
-      throw new Error("Error retrieving token from HotelService");
+      throw new Error("Error retrieving token from Interlook");
     }
     return token;
   }
@@ -84,7 +84,7 @@ export default class InterlookServiceAPI {
     );
     const interLookHotels =
       interLookHotelsXML["soap:Envelope"]["soap:Body"][0][
-        "GetHotelsResponse"
+      "GetHotelsResponse"
       ][0]["GetHotelsResult"][0]["Hotel"];
 
     const hotelJson: IHotel[] = interLookHotels.map((hotel: any) => {
@@ -124,7 +124,7 @@ export default class InterlookServiceAPI {
     );
     const InterlookCities =
       interLookCitiesXML["soap:Envelope"]["soap:Body"][0][
-        "GetRoomCategoriesResponse"
+      "GetRoomCategoriesResponse"
       ][0]["GetRoomCategoriesResult"][0]["RoomCategory"];
     const citiesJson: ICity[] = InterlookCities.map((city: any) => {
       return {
@@ -164,7 +164,7 @@ export default class InterlookServiceAPI {
 
     const interlookRoomCategories =
       roomCategoriesXML["soap:Envelope"]["soap:Body"][0][
-        "GetRoomCategoriesResponse"
+      "GetRoomCategoriesResponse"
       ][0]["GetRoomCategoriesResult"][0]["RoomCategory"];
 
     const roomCategoriesJson: IRoomCategory[] = interlookRoomCategories.map(
@@ -201,7 +201,7 @@ export default class InterlookServiceAPI {
     );
     const interlookRoomTypes =
       roomTypesXML["soap:Envelope"]["soap:Body"][0]["GetRoomTypeResponse"][0][
-        "GetRoomTypeResult"
+      "GetRoomTypeResult"
       ][0]["RoomType"];
     const roomTypesJson: IRoomType[] = interlookRoomTypes.map(
       (roomType: any) => {
@@ -238,7 +238,7 @@ export default class InterlookServiceAPI {
     const boardXML = await parser.parseStringPromise(interlookBoardText);
     const interlookBoards =
       boardXML["soap:Envelope"]["soap:Body"][0]["GetPansionsResponse"][0][
-        "GetPansionsResult"
+      "GetPansionsResult"
       ][0]["Pansion"];
     const boardsJson: IBoard[] = interlookBoards.map((board: any) => {
       return {
@@ -250,16 +250,18 @@ export default class InterlookServiceAPI {
     return boardsJson;
   }
   public static async getCalculationVariants(
-    hotel: IHotel,
+    // hotel: IHotel,
+    hotelId: number,
     checkIn: string,
     checkOut: string,
+    // apiCode: string,
   ) {
     const requestStr = `
     <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
   <SearchActualCostCalculationVariant xmlns="http://www.megatec.ru/">
     <guid>${await this.retrieveToken()}</guid>
-    <request HotelId="${hotel._id}" DateFrom="${checkIn}" DateTo="${checkOut}" ValidateQuota="false" CheckAdHot="false" Rate="EU"/>
+    <request HotelId="${hotelId}" DateFrom="${checkIn}" DateTo="${checkOut}" ValidateQuota="false" CheckAdHot="false" Rate="EU"/>
   </SearchActualCostCalculationVariant>
   </soap:Body>
   </soap:Envelope>`;
@@ -284,9 +286,9 @@ export default class InterlookServiceAPI {
 
     const interlookCalculationVariants =
       calculationVariantsXML["soap:Envelope"]["soap:Body"][0][
-        "SearchActualCostCalculationVariantResponse"
-      ][0]["SearchActualCostCalculationVariantResult"][0]["Data"][0][
-        "CostCalculationVariant"
+      "SearchActualCostCalculationVariantResponse"
+      ]?.[0]["SearchActualCostCalculationVariantResult"][0]["Data"][0][
+      "CostCalculationVariant"
       ];
 
     if (
@@ -296,55 +298,58 @@ export default class InterlookServiceAPI {
       throw new Error("No calculation variants found");
     }
 
-    const parserCode = hotel.parserCode;
-    const parserName = hotel.parserName;
-    const parserHotelServer = hotel.parserHotelServer;
-    const hotelName = hotel.name;
-    const hotelCode = hotel.code;
-    const cityId = +hotel.resortId;
-    const cityName = hotel.resort;
-    const obj: { [key: string]: any } = {};
-    const boardObj: {
+    // const parserCode = hotel.parserCode;
+    // const parserName = hotel.parserName;
+    // const parserHotelServer = hotel.parserHotelServer;
+    // const hotelName = hotel.name;
+    // const hotelCode = hotel.code;
+    // const cityId = +hotel.resortId;
+    // const cityName = hotel.resort;
+    const roomVariants: { [key: string]: any } = {};
+    const boardVariants: {
       [key: string]: { boardId: number; boardName: string };
     } = {};
-    interlookCalculationVariants?.forEach(async (variant: any) => {
+
+    interlookCalculationVariants?.map(async (variant: any) => {
       const roomTypeId = +variant.RoomTypeId[0];
       const roomTypeName = variant.RoomTypeName[0];
       const roomCategoryId = +variant.RoomCategoryId[0];
       const roomCategoryName = variant.RoomCategoryName[0];
       const boardId = variant.PansionId[0];
       const boardName = variant.PansionName[0];
-      if (!Object.hasOwn(obj, roomTypeId + "_" + roomCategoryId)) {
-        obj[roomTypeId + "_" + roomCategoryId] = {};
+      if (!Object.hasOwn(roomVariants, roomTypeId + "_" + roomCategoryId)) {
+        roomVariants[roomTypeId + "_" + roomCategoryId] = {};
       }
 
-      obj[roomTypeId + "_" + roomCategoryId] = {
+      roomVariants[roomTypeId + "_" + roomCategoryId] = {
         roomTypeId,
         roomTypeName,
         roomCategoryId,
         roomCategoryName,
       };
 
-      if (!Object.hasOwn(boardObj, boardId)) {
-        boardObj[boardId] = { boardId: +boardId, boardName };
+      if (!Object.hasOwn(boardVariants, boardId)) {
+        boardVariants[boardId] = { boardId: +boardId, boardName };
       }
-      await hotelMapModel.findByIdAndUpdate(
-        +hotel._id,
-        {
-          _id: +hotel._id,
-          rooms: obj,
-          boards: boardObj,
-          hotelName,
-          hotelId: +hotel._id,
-          hotelCode,
-          cityId,
-          cityName,
-          parserCode,
-          parserName,
-          parserHotelServer,
-        },
-        { upsert: true, new: true },
-      );
+
+      // await accomodationMap.findByIdAndUpdate(
+      //   +hotel._id,
+      //   {
+      //     _id: +hotel._id,
+      //     rooms: obj,
+      //     boards: boardObj,
+      //     hotelName,
+      //     // hotelId: +hotel._id,
+      //     // hotelCode,
+      //     // cityId,
+      //     // cityName,
+      //     parserCode,
+      //     // parserName,
+      //     // parserHotelServer,
+      //   },
+      //   { upsert: true, new: true },
+      // );
     });
+    return { roomVariants, boardVariants };
   }
 }

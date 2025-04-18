@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IHotelMap } from "../interfaces/hotelMap.interface";
+import { IAccommodationMap } from "../interfaces/acccommodationMap.interface";
 import City from "./city";
 const BoardSchema = new mongoose.Schema({
   boardId: { type: Number, required: true },
@@ -15,7 +15,7 @@ const RoomSchema = new mongoose.Schema({
   parserCode: { type: String },
 });
 
-const hotelMapSchema = new mongoose.Schema(
+const accommodationMapSchema = new mongoose.Schema(
   {
     _id: {
       type: Number,
@@ -50,16 +50,16 @@ const hotelMapSchema = new mongoose.Schema(
       type: Map,
       of: RoomSchema,
     },
-    parserCode: {
-      type: Number,
-    },
-    parserName: {
-      type: String,
-    },
-    parserHotelServer: {
-      type: String,
-    },
+    // parserCode: {
+    //   type: Number,
+    // },
+    // parserName: {
+    //   type: String,
+    // },
+    // parserHotelServer: {
+    //   type: String,
+    // },
   },
   { timestamps: true, strict: true },
 );
-export default mongoose.model<IHotelMap>("Map-hotel", hotelMapSchema);
+export default mongoose.model<IAccommodationMap>("Map-accommodation", accommodationMapSchema);

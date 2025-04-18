@@ -37,7 +37,7 @@ export default {
   HOTEL_SERVICE_URL: process.env.HOTEL_SERVICE_URL,
   HOTEL_SERVICE_USER: process.env.HOTEL_SERVICE_USER,
   HOTEL_SERVICE_PASSWORD: process.env.HOTEL_SERVICE_PASSWORD,
-  MAIL_USER: process.env.MAIL_ADDRES,
+  MAIL_USER: process.env.MAIL_USER,
   MAIL_PASS: process.env.MAIL_PASS,
   MAIL_HOST: process.env.MAIL_HOST,
   MAIL_PORT: process.env.MAIL_PORT,
@@ -46,4 +46,6 @@ export default {
   INTERLOOK_USER: process.env.INTERLOOK_USER,
   INTERLOOK_PASSWORD: process.env.INTERLOOK_PASSWORD,
   API_TOKEN_SECRET: process.env.API_TOKEN_SECRET,
+  PROXY_URL: process.env.PROXY_URL,
+  API_TOKEN: process.env.API_TOKEN
 };

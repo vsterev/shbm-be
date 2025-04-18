@@ -22,6 +22,10 @@ export default class EmailService {
     booking,
     hotel,
   }: IEmail): Promise<void> {
+    if (!envVariables.MAIL_USER || !envVariables.MAIL_PASS) {
+      throw new Error("Missing email credentials");
+    }
+
     const emailing = nodemailer.createTransport({
       host: envVariables.MAIL_HOST,
       port: Number(envVariables.MAIL_PORT),
@@ -53,6 +57,10 @@ export default class EmailService {
     let subjectStr = "";
     let contentStr = "";
     switch (type) {
+      case "confirmation":
+        subjectStr = `HBS - confirmation booking ${booking}`;
+        contentStr = `Booking <b>${booking}</b> for hotel ${hotel} is confirmed</b>.`
+        break;
       case "error":
         subjectStr = `HBS - error mapping booking ${booking}`;
         contentStr = `Mapping error -> accommodation and boards are not mapped to hotel <b>${hotel}</b> in booking <b>${booking}</b>.
@@ -67,8 +75,8 @@ export default class EmailService {
         contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>NOT CONFIRMED</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will not be change !`;
         break;
       case "notConfirmed":
-        subjectStr = `HBS - booking Not Confirmes${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>DENIED</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will be change to "Not Confirmed" !`;
+        subjectStr = `HBS - booking Not Confirmed ${booking}`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>Not Confirmed</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will be change to "Not Confirmed" !`;
         break;
       case "denied":
         subjectStr = `HBS - booking DENIED${booking}`;
