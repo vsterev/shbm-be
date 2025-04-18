@@ -34,20 +34,69 @@ This project is a backend API for managing hotel bookings, accommodations, and i
 yarn install
 ```
 
-3. Set up the environment variables:
+3. Setup pm2 deployment
+
+```bash
+pm2 deploy production setup
+```
+
+4. Set up the environment variables:
 
 ```bash
 cp example.env .env
 ```
 
-4. Build the project
+5. Build the project
 
 ```bash
 yarn build
 ```
 
-5. Run in dev mode
+6. Run in dev mode
 
 ```bash
 yarn dev
 ```
+
+7. PM2 deploy run locally
+
+```bash
+pm2 deploy ecosystem.config.cjs production
+```
+
+## Scripts
+
+- yarn dev: Start the development server with hot-reloading.
+- yarn build: Compile the TypeScript code to JavaScript.
+- yarn start: Start the production server.
+- yarn lint: Run ESLint to check for code quality issues.
+- yarn lint:fix: Automatically fix linting issues.
+
+## API Endpoints
+
+Authentication
+
+- POST /user/login: Log in a user.
+- GET /user/verify: Verify the logged-in user.
+
+Bookings
+
+- GET /bookings/search: Search for bookings.
+- POST /bookings/confirm: Confirm a booking.
+- POST /bookings/deny: Deny a booking.
+- POST /bookings: Send bookings to external services.
+
+Hotels
+
+- GET /hotels/mapped/{integrationName}: Get all mapped hotels.
+- GET /hotels/all: Get hotels from Interlook and integrations.
+- PATCH /hotels: Map a hotel to an integration.
+
+Accommodations
+
+- GET /accommodations: Get accommodation variants.
+- POST /accommodations: Create accommodation variants.
+
+## License
+
+This project is licensed under the MIT License.
