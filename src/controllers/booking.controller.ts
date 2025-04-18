@@ -69,7 +69,7 @@ export class BookingController extends Controller {
 
     const limit = Number(query.limit) || 100;
     const skip = Number(query.skip) || 0;
-    console.log(JSON.stringify(searchStr(), null, 2));
+
     const bookings = await bookingModel
       .find(searchStr())
       .sort({ dateInputed: -1 })
