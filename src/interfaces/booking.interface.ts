@@ -78,11 +78,11 @@ export interface IHotelServiceBooking {
   roomAccommodation: string;
   roomCategoryId: number;
   roomCategory: string;
-  confirmationNumber: string;
+  confirmationNumber?: string;
   checkIn: string;
   checkOut: string;
   status: string;
-  note: string;
+  note?: string;
   tourists: ITourist[];
   priceRemark?: string;
 }
@@ -102,13 +102,36 @@ export interface IBooking {
   marketId: number;
   marketName: string;
   messages: IMessage[];
-  parser?: {
-    send: IParserBooking;
-    response: IParserBookingResponse;
-    manual: { [key: string]: { booking: string; message: string } };
+  log?: {
+    sendDate?: Date;
+    send: any;
+    response: any;
+    manual?: { [key: string]: { bookingNumber: string; message: string } };
   };
-  hotelService?: IHotelServiceBooking;
   hotelServices: IHotelServiceBooking[];
   flightInfo?: IFlight;
   dateInputed?: Date;
 }
+
+export type IBookingHotelServicePrepared = IHotelServiceBooking & {
+  roomIntegrationCode?: string;
+  boardIntegrationCode?: string;
+  integrationSetings?: {
+    apiName: string;
+    hotelCode: string;
+    [key: string]: any;
+  };
+};
+
+export type IBookingPrepared = IBooking & {
+  hotelServices: IBookingHotelServicePrepared[];
+};
+
+export type IBookingHotelServiceProxyResponse =
+  IBookingHotelServicePrepared & {
+    msgConfirmation?: string;
+  }
+
+export type IBookingResponse = IBooking & {
+  hotelServices: IBookingHotelServiceProxyResponse[];
+};

@@ -23,7 +23,7 @@ import { IUser, IUserToken } from "../interfaces/user.interface";
 export function expressAuthentication(
   request: Request,
   securityName: string,
-): Promise<IUserToken> {
+): Promise<IUserToken | void> {
   if (securityName === "jwt-passport") {
     return new Promise((resolve, reject) => {
       passport.authenticate(
@@ -35,6 +35,21 @@ export function expressAuthentication(
           } else {
             resolve(user);
             request.user = user;
+          }
+        },
+      )(request);
+    });
+  }
+  if (securityName === "api-token") {
+    return new Promise<void>((resolve, reject) => {
+      passport.authenticate(
+        "api-token",
+        { session: false },
+        (err: Error) => {
+          if (err) {
+            reject(err || new Error(" Not authenticated"));
+          } else {
+            resolve();
           }
         },
       )(request);

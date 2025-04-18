@@ -16,6 +16,11 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "api-token": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "token"
       }
     }
   },
@@ -26,7 +31,7 @@
     "authenticationModule": "./src/middlewares/auth-passport.middleware.ts"
   },
   "models": {
-		"basePath": "./src/models"
-	},
-	"ignore": ["**/node_modules/**"]
+    "basePath": "./src/models"
+  },
+  "ignore": ["**/node_modules/**"]
 }

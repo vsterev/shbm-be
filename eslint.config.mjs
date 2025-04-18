@@ -9,13 +9,7 @@ export default [
   },
   { languageOptions: { globals: globals.browser } },
   {
-    ignores: [
-      "dist/",
-      "tsoa/",
-      "*.js",
-      "src/database/migrations",
-      "src/database/seeders",
-    ],
+    ignores: ["dist/", "tsoa/", "*.js", "src/database/migrations", "src/database/seeders"],
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
