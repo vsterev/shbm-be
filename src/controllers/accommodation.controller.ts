@@ -18,7 +18,6 @@ import accomodationMap from "../models/accommodationMap";
 import { IAccommodationMap } from "../interfaces/acccommodationMap.interface";
 import InterlookServiceAPI from "../services/interlook.Api.service";
 import logger from "../utils/logger";
-import { IHotel } from "../interfaces/hotel.interface";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 @Route("accommodations")
@@ -29,7 +28,7 @@ export class AccommodationController extends Controller {
   public async getVariants(
     @Query() ilCode: number,
   ): Promise<IAccommodationMap | undefined> {
-    const result = await accomodationMap.findOne({ _id: ilCode })
+    const result = await accomodationMap.findOne({ _id: ilCode });
 
     if (!result) {
       return {} as IAccommodationMap;
@@ -41,7 +40,13 @@ export class AccommodationController extends Controller {
   @Post("")
   @Security("jwt-passport")
   public async createHotelVariant(
-    @Body() body: { ilCode: number; checkIn: string; checkOut: string, integrationCode: string },
+    @Body()
+    body: {
+      ilCode: number;
+      checkIn: string;
+      checkOut: string;
+      integrationCode: string;
+    },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ) {
     try {

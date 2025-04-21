@@ -85,6 +85,22 @@ export interface IHotelServiceBooking {
   note?: string;
   tourists: ITourist[];
   priceRemark?: string;
+  log?: {
+    sendDate?: Date;
+    // esplicit any type is used here to allow for flexibility in the data structure
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    send: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    response: any;
+    manual?: {
+      [key: string]: {
+        bookingNumber: string;
+        message: string;
+        confirmationNumber?: string;
+      };
+    };
+    integrationStatus?: "wait" | "confirmed" | "denied";
+  };
 }
 export interface IFlight {
   flightArr: string;
@@ -102,12 +118,6 @@ export interface IBooking {
   marketId: number;
   marketName: string;
   messages: IMessage[];
-  log?: {
-    sendDate?: Date;
-    send: any;
-    response: any;
-    manual?: { [key: string]: { bookingNumber: string; message: string } };
-  };
   hotelServices: IHotelServiceBooking[];
   flightInfo?: IFlight;
   dateInputed?: Date;
@@ -116,9 +126,10 @@ export interface IBooking {
 export type IBookingHotelServicePrepared = IHotelServiceBooking & {
   roomIntegrationCode?: string;
   boardIntegrationCode?: string;
-  integrationSetings?: {
+  integrationSettings?: {
     apiName: string;
     hotelCode: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   };
 };
@@ -127,10 +138,9 @@ export type IBookingPrepared = IBooking & {
   hotelServices: IBookingHotelServicePrepared[];
 };
 
-export type IBookingHotelServiceProxyResponse =
-  IBookingHotelServicePrepared & {
-    msgConfirmation?: string;
-  }
+export type IBookingHotelServiceProxyResponse = IBookingHotelServicePrepared & {
+  msgConfirmation?: string;
+};
 
 export type IBookingResponse = IBooking & {
   hotelServices: IBookingHotelServiceProxyResponse[];

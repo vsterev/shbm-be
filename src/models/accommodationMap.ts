@@ -62,4 +62,7 @@ const accommodationMapSchema = new mongoose.Schema(
   },
   { timestamps: true, strict: true },
 );
-export default mongoose.model<IAccommodationMap>("Map-accommodation", accommodationMapSchema);
+export default mongoose.model<IAccommodationMap>(
+  "Map-accommodation",
+  accommodationMapSchema,
+);

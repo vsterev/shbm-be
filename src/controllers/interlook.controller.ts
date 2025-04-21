@@ -1,15 +1,8 @@
-import {
-  Controller,
-  Get,
-  Route,
-  Security,
-  Tags,
-} from "tsoa";
+import { Controller, Get, Route, Security, Tags } from "tsoa";
 import cityModel from "../models/city";
 import InterlookServiceAPI from "../services/interlook.Api.service";
 import mongoose from "mongoose";
 import logger from "../utils/logger";
-
 
 @Route("il")
 @Tags("interlook")

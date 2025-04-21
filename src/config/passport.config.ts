@@ -1,5 +1,8 @@
 import passport from "passport";
-import passportJWT, { Strategy, StrategyOptionsWithoutRequest } from "passport-jwt";
+import passportJWT, {
+  Strategy,
+  StrategyOptionsWithoutRequest,
+} from "passport-jwt";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
 import envVariables from "./envVariables";
 import userModel from "../models/user";

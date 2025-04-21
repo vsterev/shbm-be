@@ -8,7 +8,8 @@ type IEmailType =
   | "cancelation"
   | "rejected"
   | "notConfirmed"
-  | "denied";
+  | "denied"
+  | "waiting";
 
 interface IEmail {
   booking: string;
@@ -59,7 +60,7 @@ export default class EmailService {
     switch (type) {
       case "confirmation":
         subjectStr = `HBS - confirmation booking ${booking}`;
-        contentStr = `Booking <b>${booking}</b> for hotel ${hotel} is confirmed</b>.`
+        contentStr = `Booking <b>${booking}</b> for hotel ${hotel} is confirmed</b>.`;
         break;
       case "error":
         subjectStr = `HBS - error mapping booking ${booking}`;
@@ -81,6 +82,10 @@ export default class EmailService {
       case "denied":
         subjectStr = `HBS - booking DENIED${booking}`;
         contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>DENIED</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will be change to "Wait !`;
+        break;
+      case "waiting":
+        subjectStr = `HBS - booking WAITING${booking}`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>WAITING</b> in Hotel Parser System!<br> Hotel Booking System. Status in IL will not be changed to "Wait !`;
         break;
     }
     return { subject: subjectStr, content: contentStr };

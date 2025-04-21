@@ -10,7 +10,6 @@ export default class CronJobsService {
     try {
       const hotels = await InterlookServiceAPI.getHotels();
       for (const hotel of hotels) {
-        console.log(hotel);
         await hotelModel.findOneAndUpdate(
           { _id: hotel._id },
           { $set: hotel },

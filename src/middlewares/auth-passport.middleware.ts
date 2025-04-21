@@ -42,17 +42,13 @@ export function expressAuthentication(
   }
   if (securityName === "api-token") {
     return new Promise<void>((resolve, reject) => {
-      passport.authenticate(
-        "api-token",
-        { session: false },
-        (err: Error) => {
-          if (err) {
-            reject(err || new Error(" Not authenticated"));
-          } else {
-            resolve();
-          }
-        },
-      )(request);
+      passport.authenticate("api-token", { session: false }, (err: Error) => {
+        if (err) {
+          reject(err || new Error(" Not authenticated"));
+        } else {
+          resolve();
+        }
+      })(request);
     });
   }
   return Promise.reject(new Error("Unknown security name"));

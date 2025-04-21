@@ -47,5 +47,5 @@ export default {
   INTERLOOK_PASSWORD: process.env.INTERLOOK_PASSWORD,
   API_TOKEN_SECRET: process.env.API_TOKEN_SECRET,
   PROXY_URL: process.env.PROXY_URL,
-  API_TOKEN: process.env.API_TOKEN
+  API_TOKEN: process.env.API_TOKEN,
 };

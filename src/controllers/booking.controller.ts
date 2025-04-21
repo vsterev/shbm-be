@@ -42,6 +42,7 @@ export class BookingController extends Controller {
     const { dateFrom, dateTo, booking, isCreateDate } = query;
 
     const searchStr = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let obj: { [key: string]: any } = {};
       if (booking) {
         obj = { ...obj, bookingName: booking };
@@ -49,7 +50,10 @@ export class BookingController extends Controller {
       if (dateFrom && !isCreateDate) {
         obj = { ...obj, ["hotelServices.checkIn"]: { $gte: dateFrom } };
       } else if (dateFrom && isCreateDate) {
-        obj = { ...obj, ["log.sendDate"]: { $gte: new Date(dateFrom) } };
+        obj = {
+          ...obj,
+          ["hotelServices.log.sendDate"]: { $gte: new Date(dateFrom) },
+        };
       }
       if (dateTo && !isCreateDate) {
         obj["hotelServices.checkIn"] = {
@@ -57,7 +61,10 @@ export class BookingController extends Controller {
           $lte: dateTo,
         };
       } else if (dateTo && isCreateDate) {
-        obj["log.sendDate"] = { ...obj["log.sendDate"], $lte: new Date(dateTo) };
+        obj["log.sendDate"] = {
+          ...obj["hotelServices.log.sendDate"],
+          $lte: new Date(dateTo),
+        };
       }
       // if (!booking||!dateFrom||!dateTo) {
       //     console.log('please fill in the fields')
@@ -92,24 +99,12 @@ export class BookingController extends Controller {
     },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ): Promise<string> {
-
-    let booking = {} as IBooking;
-
-    if (!body.bookingNumber.includes("-")) {
-
-      booking = await bookingModel
-        .findOne({ bookingName: body.bookingNumber })
-        .sort({ dateInputed: -1 })
-        .lean();
-    } else {
-
-      const searchStr = body.bookingNumber.split("-")[1];
-
-      booking = await bookingModel
-        .findOne({ "hotelService.serviceId": searchStr })
-        .sort({ dateInputed: -1 })
-        .lean();
-    }
+    const booking = await bookingModel
+      .findOne({
+        "hotelServices.serviceId": Number(body.bookingNumber.split("-")[1]),
+      })
+      .sort({ dateInputed: -1 })
+      .lean();
     if (!booking || !booking.hotelServices[0]) {
       throw notFoundRes(404, {
         error: "Hotel service information is missing in the booking.",
@@ -117,15 +112,17 @@ export class BookingController extends Controller {
     }
 
     const { serviceId, hotel } = booking.hotelServices[0];
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _id, ...newBooking } = booking;
 
     newBooking.dateInputed = new Date();
 
-    newBooking.log = {
-      send: newBooking.log?.send || {} as IParserBooking,
-      response: newBooking.log?.response || {} as IParserBookingResponse,
-      manual: { confirm: body },
+    newBooking.hotelServices[0].log = {
+      send: {} as IParserBooking,
+      response: {} as IParserBookingResponse,
+      manual: { confirmed: body },
+      sendDate: new Date(),
+      integrationStatus: "confirmed",
     };
 
     if (newBooking.hotelServices[0]) {
@@ -159,22 +156,15 @@ export class BookingController extends Controller {
     },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ): Promise<string> {
+    const booking = await bookingModel
+      .findOne({
+        "hotelServices.serviceId": Number(
+          Number(body.bookingNumber.split("-")[1]),
+        ),
+      })
+      .sort({ dateInputed: -1 })
+      .lean();
 
-    let booking = {} as IBooking;
-
-    if (!body.bookingNumber.includes("-")) {
-      booking = await bookingModel
-        .findOne({ bookingName: body.bookingNumber })
-        .sort({ dateInputed: -1 })
-        .lean();
-    } else {
-      const searchStr = body.bookingNumber.split("-")[1];
-
-      booking = await bookingModel
-        .findOne({ "hotelService.serviceId": searchStr })
-        .sort({ dateInputed: -1 })
-        .lean();
-    }
     if (!booking || !booking.hotelServices[0]) {
       throw notFoundRes(404, {
         error: "Hotel service information is missing in the booking.",
@@ -183,14 +173,17 @@ export class BookingController extends Controller {
 
     const { serviceId, hotel, status } = booking.hotelServices[0];
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _id, ...newBooking } = booking;
 
     newBooking.dateInputed = new Date();
 
-    newBooking.log = {
-      send: newBooking.log?.send || {} as IParserBooking,
-      response: newBooking.log?.response || {} as IParserBookingResponse,
-      manual: { deny: body },
+    newBooking.hotelServices[0].log = {
+      send: {} as IParserBooking,
+      response: {} as IParserBookingResponse,
+      manual: { denied: body },
+      sendDate: new Date(),
+      integrationStatus: "denied",
     };
 
     let returnStr = "";
@@ -239,11 +232,19 @@ export class BookingController extends Controller {
   @Get("")
   @Security("jwt-passport")
   public async getBookings(
-    @Queries() query: { integrationName: string, status: "new" | "change" | "cancel"; next: boolean },
+    @Queries()
+    query: {
+      integrationName: string;
+      status: "new" | "change" | "cancel";
+      next: boolean;
+    },
     @Res() syncFailed: TsoaResponse<422, { error: string }>,
   ) {
     try {
-      const newBookings = await HotelServiceAPI.getBookings(query.status, query.integrationName);
+      const newBookings = await HotelServiceAPI.getBookings(
+        query.status,
+        query.integrationName,
+      );
 
       const bookings = HotelServiceAPI.deserializeXMLBooking(
         newBookings || [],
@@ -271,34 +272,55 @@ export class BookingController extends Controller {
         action: booking.action || "New",
       })) as IBooking[];
 
-      let { errors, preparedBookings } = await BookingService.bookingPrepareSend(completeBookings, integrationName);
+      // eslint-disable-next-line
+      let { errors, preparedBookings } =
+        await BookingService.bookingPrepareSend(
+          completeBookings,
+          integrationName,
+        );
 
-      const proxyResult = await ProxyService.sendBookings(integrationName, preparedBookings);
+      const proxyResult = await ProxyService.sendBookings(
+        integrationName,
+        preparedBookings,
+      );
 
-      const { confirmedBookings, deniedBookings, errors: errorsResponse } = proxyResult;
+      const { processedBookings, errors: errorsResponse } = proxyResult;
 
       const sendedBookingsCount = preparedBookings.length;
 
-      const confirmedBookingsCount = confirmedBookings.length;
+      const confirmedBookingsCount = processedBookings.filter((booking) =>
+        booking.hotelServices.some(
+          (hts) => hts.log?.integrationStatus === "confirmed",
+        ),
+      ).length;
 
-      const deniedBookingsCount = deniedBookings.length;
+      const deniedBookingsCount = processedBookings.filter((booking) =>
+        booking.hotelServices.some(
+          (hts) => hts.log?.integrationStatus === "denied",
+        ),
+      ).length;
 
       errors = errors + errorsResponse.length;
 
-      await Promise.all(errorsResponse.map(async (error) => {
-        await EmailService.sendEmail({
-          type: "error",
-          booking: error.booking,
-          hotel: error.hotel,
-        });
-      })
-      )
+      await Promise.all(
+        errorsResponse.map(async (error) => {
+          await EmailService.sendEmail({
+            type: "error",
+            booking: error.booking,
+            hotel: error.hotel,
+          });
+        }),
+      );
 
-      await BookingService.bookingResponseProcessing(confirmedBookings, 'confirm');
+      await BookingService.bookingResponseProcessing(processedBookings);
 
-      await BookingService.bookingResponseProcessing(deniedBookings, 'notConfirmed');
-
-      return { errors, sended: sendedBookingsCount, confirmed: confirmedBookingsCount, notConfirmed: deniedBookingsCount, cancelled: 0 };
+      return {
+        errors,
+        sended: sendedBookingsCount,
+        confirmed: confirmedBookingsCount,
+        notConfirmed: deniedBookingsCount,
+        cancelled: 0,
+      };
     } catch (error) {
       logger.error(error);
     }

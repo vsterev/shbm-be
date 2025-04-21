@@ -23,5 +23,4 @@ export interface IAccommodationMap {
   hotelName: string;
   boards: { [key: string]: IBoard };
   rooms: { [key: string]: IRoom };
-
 }

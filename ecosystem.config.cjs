@@ -15,7 +15,8 @@ module.exports = {
       ref: "origin/master",
       repo: "git@github.com:vsterev/shbm-be.git",
       path: "/home/vsterev/git/shbm/pm2/shbm-backend",
-      "post-deploy": "yarn && yarn build && pm2 startOrReload ecosystem.config.cjs --only shbm-be",
+      "post-deploy":
+        "yarn && yarn build && pm2 startOrReload ecosystem.config.cjs --only shbm-be",
     },
   },
 };
