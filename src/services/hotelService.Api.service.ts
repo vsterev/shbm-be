@@ -4,7 +4,13 @@ import xml2js from "xml2js";
 import redis from "../config/redis.config";
 import hotelMap from "../models/accommodationMap";
 import hotel from "../models/hotel";
-import { IBooking, IFlight, IHotelServiceBooking, IMessage, ITourist } from "../interfaces/booking.interface";
+import {
+  IBooking,
+  IFlight,
+  IHotelServiceBooking,
+  IMessage,
+  ITourist,
+} from "../interfaces/booking.interface";
 
 const parser = new xml2js.Parser();
 
@@ -63,7 +69,7 @@ export default class HotelServiceAPI {
       const xml = await parser.parseStringPromise(xmlPromise);
       const token =
         xml["soap:Envelope"]["soap:Body"][0]["ConnectResponse"][0][
-        "ConnectResult"
+          "ConnectResult"
         ][0];
 
       if (!token || token.includes("Invalid login or password")) {
@@ -94,11 +100,12 @@ export default class HotelServiceAPI {
     <soap:Body>
       <SearchBookings xmlns="http://tempuri.org/">
         <guid>${token}</guid>
-        ${hotelIds.length
-          ? `<hotelID>${hotelIds.map(
-            (el) => `\t\n<int>${el}</int>`
-          )}\n</hotelID>`
-          : ""
+        ${
+          hotelIds.length
+            ? `<hotelID>${hotelIds.map(
+                (el) => `\t\n<int>${el}</int>`,
+              )}\n</hotelID>`
+            : ""
         }
         <dateInfo>2</dateInfo>
         <dateFrom>${this.getDate().dateFrom}</dateFrom>
@@ -117,11 +124,10 @@ export default class HotelServiceAPI {
 
     let hotelIds: number[] = [];
 
-
     if (!hotelsName?.length) {
-      hotelIds = (await hotel.find(
-        { "integrationSettings.apiName": [integrationName] }
-      ))
+      hotelIds = (
+        await hotel.find({ "integrationSettings.apiName": [integrationName] })
+      )
         .map((hotel) => hotel._id)
         .filter((el) => el);
     } else {
@@ -150,7 +156,7 @@ export default class HotelServiceAPI {
 
     const error =
       xml["soap:Envelope"]["soap:Body"]?.[0]?.["soap:Fault"]?.[0]?.[
-      "faultstring"
+        "faultstring"
       ][0];
 
     if (error) {
@@ -159,7 +165,7 @@ export default class HotelServiceAPI {
 
     const bookings =
       xml["soap:Envelope"]["soap:Body"][0]["SearchBookingsResponse"][0][
-      "SearchBookingsResult"
+        "SearchBookingsResult"
       ][0]["BookingInfo"];
 
     if (!bookings) {
@@ -192,9 +198,10 @@ export default class HotelServiceAPI {
       <guid>${token}</guid>
       <hotelServiceId>${serviceId}</hotelServiceId>
       <status>${ilBookingStatus[status]}</status>
-      ${confirmationNumber
-        ? `<hotelConfirmationNumber>${confirmationNumber}</hotelConfirmationNumber>`
-        : ""
+      ${
+        confirmationNumber
+          ? `<hotelConfirmationNumber>${confirmationNumber}</hotelConfirmationNumber>`
+          : ""
       }
       ${message ? `<message>${message}</message>` : ""}
       <hotelWorkStatus>true</hotelWorkStatus>
@@ -217,6 +224,7 @@ export default class HotelServiceAPI {
     return fetchResponse;
   }
   public static deserializeXMLBooking(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     xmlBookings: any[],
     action: "new" | "change" | "cancel",
   ): IBooking[] {
@@ -254,6 +262,7 @@ export default class HotelServiceAPI {
           const messages = el.Messages[0].MessageInfo;
           const messageArr: IMessage[] = [];
           if (messages?.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             messages.map((el: any) => {
               const id = el.Id[0];
               const isOutgoing = el.IsOutgoing[0];
@@ -275,6 +284,7 @@ export default class HotelServiceAPI {
             });
           }
           const services: IHotelServiceBooking[] = [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           hotelServices?.map((el: any) => {
             const serviceId = Number(el.HotelServiceId[0]);
             const serviceName = el.HotelServiceName[0];
@@ -304,26 +314,28 @@ export default class HotelServiceAPI {
             const tourists = el.Tourists[0].TouristInfo;
             const costOffers = el.CostOffers[0];
             const priceRemark = Object.hasOwn(costOffers, "CostOfferInfo")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
               ? costOffers.CostOfferInfo?.map((el: any) => {
-                const str = el.CostOfferName[0];
-                const regexSPO = /spo/gi;
-                const regexEXTR = /extr/gi;
-                const regexORD = /ord/gi;
-                const regexEB = /eb/gi;
+                  const str = el.CostOfferName[0];
+                  const regexSPO = /spo/gi;
+                  const regexEXTR = /extr/gi;
+                  const regexORD = /ord/gi;
+                  const regexEB = /eb/gi;
 
-                if (str.match(regexEXTR)) {
-                  return "EXTRAS";
-                } else if (str.match(regexSPO)) {
-                  return "SPO";
-                } else if (str.match(regexEB)) {
-                  return "EB";
-                } else if (str.match(regexORD)) {
-                  return "ORDINARY";
-                }
-              }).join(",")
+                  if (str.match(regexEXTR)) {
+                    return "EXTRAS";
+                  } else if (str.match(regexSPO)) {
+                    return "SPO";
+                  } else if (str.match(regexEB)) {
+                    return "EB";
+                  } else if (str.match(regexORD)) {
+                    return "ORDINARY";
+                  }
+                }).join(",")
               : undefined;
 
             const touristArr: ITourist[] = [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             tourists?.map((el: any) => {
               const name = el.Name[0];
               const birthDate =
@@ -334,8 +346,8 @@ export default class HotelServiceAPI {
               const hotelServiceId = el.HotelServiceId[0] || undefined;
               touristArr.push({ name, birthDate, sex, hotelServiceId });
             });
-            // console.log(action, aaction, bookingName, serviceName)
-
+            
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const hotelServiceObject: any = {
               serviceId,
               serviceName,

@@ -37,7 +37,7 @@ const hotelSchema = new mongoose.Schema(
       hotelCode: Number,
       type: Map,
       of: mongoose.Schema.Types.Mixed,
-    }
+    },
   },
   { timestamps: true, strict: true },
 );

@@ -23,19 +23,14 @@ import { HotelResponse } from "../interfaces/hotel.interface";
 @Route("hotels")
 @Tags("hotels")
 export class HotelController extends Controller {
-
   @Get("mapped/{integrationName}")
   @Security("jwt-passport")
-  public async getAllMapped(
-    @Path() integrationName: string
-  ) {
+  public async getAllMapped(@Path() integrationName: string) {
     try {
-      return hotelModel.find(
-        {
-          // [integrationCode]: { $exists: true, $nin: [null, '', 0] }
-          [`integrationSettings.apiName`]: integrationName,
-        }
-      );
+      return hotelModel.find({
+        // [integrationCode]: { $exists: true, $nin: [null, '', 0] }
+        [`integrationSettings.apiName`]: integrationName,
+      });
     } catch (error) {
       logger.error(error);
     }
@@ -44,12 +39,14 @@ export class HotelController extends Controller {
   @Get("all")
   @Security("jwt-passport")
   public async getInterlookAndIntegrationHotels(
-    @Query() integrationName: string
+    @Query() integrationName: string,
   ) {
     try {
       const integrations = await ProxyService.getIntegrations();
 
-      const integration = integrations?.find((integration) => integration.name === integrationName);
+      const integration = integrations?.find(
+        (integration) => integration.name === integrationName,
+      );
 
       if (!integration) {
         return { integrationHotels: [], interlookHotels: [] };
@@ -62,10 +59,12 @@ export class HotelController extends Controller {
       //   .map((hotel) => hotel[integration.code as keyof IHotel]);
 
       const interlookHotelsApi = await hotelModel
-        .find({ [`integrationSettings.apiName`]: integrationName }).lean();
+        .find({ [`integrationSettings.apiName`]: integrationName })
+        .lean();
 
-      const codesFromInterlookHotelsApi = interlookHotelsApi
-        .map((hotel) => Number(hotel.integrationSettings?.hotelCode));
+      const codesFromInterlookHotelsApi = interlookHotelsApi.map((hotel) =>
+        Number(hotel.integrationSettings?.hotelCode),
+      );
 
       const mappedIntegrationHotels: (HotelResponse & {
         mapped: boolean;
@@ -93,16 +92,23 @@ export class HotelController extends Controller {
   @Patch("")
   @Security("jwt-passport")
   public async hotelMap(
-    @Body() body: { integrationName: string, integrationValue: number; hotelId: number },
+    @Body()
+    body: {
+      integrationName: string;
+      integrationValue: number;
+      hotelId: number;
+    },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
     @Res() errorEditHotelMap: TsoaResponse<422, { message: string }>,
-
   ): Promise<IHotel | undefined> {
     try {
+      const integrationHotels = await ProxyService.getHotels(
+        body.integrationName,
+      );
 
-      const integrationHotels = await ProxyService.getHotels(body.integrationName);
-
-      const integration = await ProxyService.getIntegration(body.integrationName);
+      const integration = await ProxyService.getIntegration(
+        body.integrationName,
+      );
 
       if (!integration) {
         throw notFoundRes(404, {
@@ -121,10 +127,9 @@ export class HotelController extends Controller {
       }
 
       const integrationCodeIsAssigned = await hotelModel.findOne({
-        ['integrationSettings.hotelCode']: body.integrationValue,
+        ["integrationSettings.hotelCode"]: body.integrationValue,
         _id: { $ne: body.hotelId },
       });
-
 
       if (integrationCodeIsAssigned) {
         throw errorEditHotelMap(422, {
@@ -133,8 +138,11 @@ export class HotelController extends Controller {
       }
 
       const isHotelMapped = await hotelModel.findOne({
-        ['integrationSettings.hotelCode']: { $exists: true, $nin: [null, '', 0] },
-        ['integrationSettings.apiName']: { $nin: [body.integrationName] },
+        ["integrationSettings.hotelCode"]: {
+          $exists: true,
+          $nin: [null, "", 0],
+        },
+        ["integrationSettings.apiName"]: { $nin: [body.integrationName] },
         _id: body.hotelId,
       });
 
@@ -148,9 +156,12 @@ export class HotelController extends Controller {
         {
           [`integrationSettings.hotelCode`]: body.integrationValue,
           [`integrationSettings.apiName`]: body.integrationName,
-          ['integrationSettings.hotelServer']: integrationHotel.settings.hotelServer,
-          ['integrationSettings.hotelServerId']: integrationHotel.settings.hotelServerId,
-          ['integrationSettings.serverName']: integrationHotel.settings.serverName,
+          ["integrationSettings.hotelServer"]:
+            integrationHotel.settings.hotelServer,
+          ["integrationSettings.hotelServerId"]:
+            integrationHotel.settings.hotelServerId,
+          ["integrationSettings.serverName"]:
+            integrationHotel.settings.serverName,
           // [integration.code]: body.integrationValue,
           // parserName: body.parserCode ? parserHotel?.Hotel : "",
           // parserHotelServer: body.parserCode ? parserHotel?.HotelServer : "",
@@ -170,7 +181,9 @@ export class HotelController extends Controller {
     @Body() body: { hotelId: number; integrationName: string },
   ): Promise<void> {
     try {
-      const integration = await ProxyService.getIntegration(body.integrationName);
+      const integration = await ProxyService.getIntegration(
+        body.integrationName,
+      );
 
       if (!integration) {
         throw new Error("Integration not found");

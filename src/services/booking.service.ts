@@ -1,4 +1,10 @@
-import { IBooking, IBookingPrepared, IBookingHotelServicePrepared, IBookingResponse, IBookingHotelServiceProxyResponse } from "../interfaces/booking.interface";
+import {
+  IBooking,
+  IBookingPrepared,
+  IBookingHotelServicePrepared,
+  IBookingResponse,
+  IBookingHotelServiceProxyResponse,
+} from "../interfaces/booking.interface";
 import hotelMap from "../models/accommodationMap";
 import EmailService from "./email.service";
 import logger from "../utils/logger";
@@ -9,8 +15,10 @@ import bookingModel from "../models/booking";
 import HotelServiceAPI from "./hotelService.Api.service";
 
 export default class BookingService {
-  static async bookingPrepareSend(bookings: IBooking[], integrationName: string):
-    Promise<{ preparedBookings: IBookingPrepared[], errors: number }> {
+  static async bookingPrepareSend(
+    bookings: IBooking[],
+    integrationName: string,
+  ): Promise<{ preparedBookings: IBookingPrepared[]; errors: number }> {
     try {
       let errors = 0;
       const integration = await ProxyService.getIntegration(integrationName);
@@ -20,12 +28,11 @@ export default class BookingService {
         bookings.map(async (booking) => {
           const preparedHotelServices = await Promise.all(
             booking.hotelServices.map(async (hts) => {
+              const hotel = await hotelModel
+                .findOne({ _id: hts.hotelId })
+                .lean();
 
-              const hotel = await hotelModel.findOne(
-                { _id: hts.hotelId },
-              ).lean();
-
-              const hasVoucher = booking.log?.response?.Vocher;
+              const hasVoucher = hts.log?.response?.Vocher;
 
               if (
                 booking.action === "Changed" &&
@@ -36,12 +43,18 @@ export default class BookingService {
                 booking.action = "New";
               }
 
-              const mappings = await hotelMap.findOne({ _id: hts.hotelId }).lean();
+              const mappings = await hotelMap
+                .findOne({ _id: hts.hotelId })
+                .lean();
 
               if (
                 !mappings ||
-                !(mappings.rooms[hts.roomMapCode]?.[integrationCode as keyof IRoom]) ||
-                !(mappings.boards[hts.pansionId]?.[integrationCode as keyof IBoard])
+                !mappings.rooms[hts.roomMapCode]?.[
+                  integrationCode as keyof IRoom
+                ] ||
+                !mappings.boards[hts.pansionId]?.[
+                  integrationCode as keyof IBoard
+                ]
               ) {
                 await EmailService.sendEmail({
                   type: "error",
@@ -56,22 +69,31 @@ export default class BookingService {
 
               return {
                 ...hts,
-                roomIntegrationCode: mappings.rooms[hts.roomMapCode]?.[integrationCode as keyof IRoom],
-                boardIntegrationCode: mappings.boards[hts.pansionId]?.[integrationCode as keyof IBoard],
-                integrationSetings: hotel?.integrationSettings,
+                roomIntegrationCode:
+                  mappings.rooms[hts.roomMapCode]?.[
+                    integrationCode as keyof IRoom
+                  ],
+                boardIntegrationCode:
+                  mappings.boards[hts.pansionId]?.[
+                    integrationCode as keyof IBoard
+                  ],
+                integrationSettings: hotel?.integrationSettings,
               } as IBookingHotelServicePrepared;
+            }),
+          );
 
-            })
-          )
-
-          booking.hotelServices = preparedHotelServices.filter(Boolean) as IBookingHotelServicePrepared[];
+          booking.hotelServices = preparedHotelServices.filter(
+            Boolean,
+          ) as IBookingHotelServicePrepared[];
 
           return booking;
-        })
-      )
+        }),
+      );
 
       const filteredPreparedBookings = preparedBookings.filter((booking) => {
-        const hotelServices = (booking.hotelServices as IBookingHotelServicePrepared[]).filter((hts) => {
+        const hotelServices = (
+          booking.hotelServices as IBookingHotelServicePrepared[]
+        ).filter((hts) => {
           return hts.roomIntegrationCode && hts.boardIntegrationCode;
         });
         booking.hotelServices = hotelServices;
@@ -82,33 +104,64 @@ export default class BookingService {
     } catch (error) {
       logger.error(error);
       return { preparedBookings: [], errors: 0 };
-
     }
   }
 
-  static async bookingResponseProcessing(bookings: IBookingResponse[], status: 'confirm' | 'notConfirmed'): Promise<void> {
-    Promise.all(bookings.map(async (booking) => {
-      Promise.all(booking.hotelServices.map(async (hts: IBookingHotelServiceProxyResponse) => {
+  static async bookingResponseProcessing(
+    bookings: IBookingResponse[],
+  ): Promise<void> {
+    Promise.all(
+      bookings.map(async (booking) => {
+        await Promise.all(
+          booking.hotelServices.map(
+            async (hts: IBookingHotelServiceProxyResponse) => {
+              switch (hts.log?.integrationStatus) {
+                case "confirmed":
+                  await EmailService.sendEmail({
+                    type: "confirmation",
+                    booking: booking.bookingName,
+                    hotel: hts.hotel,
+                  });
 
-        await EmailService.sendEmail({
-          type: status === 'confirm' ? "confirmation" : "notConfirmed",
-          booking: booking.bookingName,
-          hotel: hts.hotel,
-        });
+                  await HotelServiceAPI.manageBooking(
+                    hts.serviceId,
+                    "confirm",
+                    hts.confirmationNumber || "",
+                    hts.msgConfirmation || "",
+                  );
+                  break;
 
-        await HotelServiceAPI.manageBooking(
-          hts.serviceId,
-          status,
-          hts.confirmationNumber || "",
-          hts.msgConfirmation || "",
+                case "denied":
+                  await EmailService.sendEmail({
+                    type: "denied",
+                    booking: booking.bookingName || "",
+                    hotel: hts.hotel || "",
+                  });
+
+                  await HotelServiceAPI.manageBooking(
+                    hts.serviceId,
+                    "denied",
+                    hts.confirmationNumber || "",
+                    hts.msgConfirmation || "",
+                  );
+                  break;
+
+                case "wait":
+                  await EmailService.sendEmail({
+                    type: "waiting",
+                    booking: booking.bookingName || "",
+                    hotel: hts.hotel || "",
+                  });
+                  break;
+
+                default:
+                  return null;
+              }
+            },
+          ),
         );
-
-        const log = await bookingModel.create(booking);
-        console.log({ booking, log })
-
-      })
-      );
-    })
+        await bookingModel.create(booking);
+      }),
     );
   }
 }

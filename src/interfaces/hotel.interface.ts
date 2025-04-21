@@ -9,8 +9,9 @@ export interface IHotel {
   integrationSettings?: {
     apiName: string;
     hotelCode: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
-  }
+  };
 }
 
 export interface HotelResponse {
@@ -20,6 +21,6 @@ export interface HotelResponse {
     hotelServer: string;
     hotelServerId: number;
     serverName: string;
-  }
+  };
   mapped?: boolean;
 }

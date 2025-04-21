@@ -3,18 +3,6 @@ import { IBooking } from "../interfaces/booking.interface";
 
 const bookingSchema = new mongoose.Schema(
   {
-    log: {
-      type: new mongoose.Schema(
-        {
-          sendDate: { type: Date, required: false },
-          send: { type: mongoose.Schema.Types.Mixed, required: false },
-          response: { type: mongoose.Schema.Types.Mixed, required: false },
-          manual: { type: Map, of: new mongoose.Schema({ bookingNumber: String, message: String }), required: false },
-        },
-        { _id: false }
-      ),
-      required: false,
-    },
     bookingName: String,
     bookingId: Number,
     action: String,
@@ -55,6 +43,30 @@ const bookingSchema = new mongoose.Schema(
             hotelServiceId: { type: Number, required: false },
           },
         ],
+        log: {
+          type: new mongoose.Schema(
+            {
+              sendDate: { type: Date, required: false },
+              send: { type: mongoose.Schema.Types.Mixed, required: false },
+              response: { type: mongoose.Schema.Types.Mixed, required: false },
+              manual: {
+                type: Map,
+                of: new mongoose.Schema({
+                  bookingNumber: String,
+                  message: String,
+                  confirmationNumber: { type: String, required: false },
+                }),
+                required: false,
+              },
+              integrationStatus: {
+                enum: ["wait", "confirmed", "denied"],
+                type: String,
+              },
+            },
+            { _id: false },
+          ),
+          required: false,
+        },
       },
     ],
     messages: [

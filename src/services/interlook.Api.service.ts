@@ -7,7 +7,6 @@ import { IRoomType } from "../interfaces/roomType.interface";
 import { IBoard } from "../interfaces/board.interface";
 import redis from "../config/redis.config";
 import logger from "../utils/logger";
-import accomodationMap from "../models/accommodationMap";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const parser = new xml2js.Parser();
@@ -36,7 +35,7 @@ export default class InterlookServiceAPI {
 
       const token =
         xml["soap:Envelope"]["soap:Body"][0]["ConnectResponse"][0][
-        "ConnectResult"
+          "ConnectResult"
         ][0];
       if (!token || token.includes("Invalid login or password")) {
         throw new Error("Invalid login or password");
@@ -84,7 +83,7 @@ export default class InterlookServiceAPI {
     );
     const interLookHotels =
       interLookHotelsXML["soap:Envelope"]["soap:Body"][0][
-      "GetHotelsResponse"
+        "GetHotelsResponse"
       ][0]["GetHotelsResult"][0]["Hotel"];
 
     const hotelJson: IHotel[] = interLookHotels.map((hotel: any) => {
@@ -124,7 +123,7 @@ export default class InterlookServiceAPI {
     );
     const InterlookCities =
       interLookCitiesXML["soap:Envelope"]["soap:Body"][0][
-      "GetRoomCategoriesResponse"
+        "GetRoomCategoriesResponse"
       ][0]["GetRoomCategoriesResult"][0]["RoomCategory"];
     const citiesJson: ICity[] = InterlookCities.map((city: any) => {
       return {
@@ -164,7 +163,7 @@ export default class InterlookServiceAPI {
 
     const interlookRoomCategories =
       roomCategoriesXML["soap:Envelope"]["soap:Body"][0][
-      "GetRoomCategoriesResponse"
+        "GetRoomCategoriesResponse"
       ][0]["GetRoomCategoriesResult"][0]["RoomCategory"];
 
     const roomCategoriesJson: IRoomCategory[] = interlookRoomCategories.map(
@@ -201,7 +200,7 @@ export default class InterlookServiceAPI {
     );
     const interlookRoomTypes =
       roomTypesXML["soap:Envelope"]["soap:Body"][0]["GetRoomTypeResponse"][0][
-      "GetRoomTypeResult"
+        "GetRoomTypeResult"
       ][0]["RoomType"];
     const roomTypesJson: IRoomType[] = interlookRoomTypes.map(
       (roomType: any) => {
@@ -238,7 +237,7 @@ export default class InterlookServiceAPI {
     const boardXML = await parser.parseStringPromise(interlookBoardText);
     const interlookBoards =
       boardXML["soap:Envelope"]["soap:Body"][0]["GetPansionsResponse"][0][
-      "GetPansionsResult"
+        "GetPansionsResult"
       ][0]["Pansion"];
     const boardsJson: IBoard[] = interlookBoards.map((board: any) => {
       return {
@@ -286,9 +285,9 @@ export default class InterlookServiceAPI {
 
     const interlookCalculationVariants =
       calculationVariantsXML["soap:Envelope"]["soap:Body"][0][
-      "SearchActualCostCalculationVariantResponse"
+        "SearchActualCostCalculationVariantResponse"
       ]?.[0]["SearchActualCostCalculationVariantResult"][0]["Data"][0][
-      "CostCalculationVariant"
+        "CostCalculationVariant"
       ];
 
     if (
