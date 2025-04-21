@@ -35,10 +35,11 @@ export default class HotelServiceAPI {
     let mm: string | number = yesterday.getMonth() + 1;
     const thisYear = yesterday.getFullYear();
     const nextYear = yesterday.getFullYear() + 1;
-    if (dd < 10)
+    if (dd < 10) {
       if (dd < 10) {
         dd = "0" + dd.toString();
       }
+    }
     if (mm < 10) {
       mm = "0" + mm.toString();
     }
@@ -314,8 +315,8 @@ export default class HotelServiceAPI {
             const tourists = el.Tourists[0].TouristInfo;
             const costOffers = el.CostOffers[0];
             const priceRemark = Object.hasOwn(costOffers, "CostOfferInfo")
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ? costOffers.CostOfferInfo?.map((el: any) => {
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                costOffers.CostOfferInfo?.map((el: any) => {
                   const str = el.CostOfferName[0];
                   const regexSPO = /spo/gi;
                   const regexEXTR = /extr/gi;
@@ -346,7 +347,7 @@ export default class HotelServiceAPI {
               const hotelServiceId = el.HotelServiceId[0] || undefined;
               touristArr.push({ name, birthDate, sex, hotelServiceId });
             });
-            
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const hotelServiceObject: any = {
               serviceId,

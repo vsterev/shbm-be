@@ -95,9 +95,11 @@ const stopServer = async () => {
       (resolve) =>
         startedServer &&
         startedServer.close((error) => {
-          error === undefined
-            ? logger.info("Successfully stopped Express server")
-            : logger.error("Error stopping Express server", error.stack);
+          if (error === undefined) {
+            logger.info("Successfully stopped Express server");
+          } else {
+            logger.error("Error stopping Express server", error.stack);
+          }
           startedServer = null;
           resolve();
         }),

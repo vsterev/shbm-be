@@ -75,6 +75,7 @@ export class AuthController extends Controller {
       }
       return req.user as IUserToken;
     } catch (error) {
+      logger.error(error);
       throw notVerifiedToken(422, { error: "Token is not verified" });
     }
   }
