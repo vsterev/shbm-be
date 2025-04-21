@@ -20,5 +20,5 @@
         "tab.activeBackground": "#454608"
     },
     "peacock.color": "#f1d86c",
-    "editor.formatOnSave": false,
+    // "editor.formatOnSave": false,
  }
