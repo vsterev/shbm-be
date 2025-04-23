@@ -1,5 +1,6 @@
 import InterlookServiceAPI from "./interlook.Api.service";
 import hotelModel from "../models/hotel";
+import boardModel from "../models/board";
 import logger from "../utils/logger";
 import mongoose from "mongoose";
 
@@ -36,7 +37,7 @@ export default class CronJobsService {
     try {
       const boards = await InterlookServiceAPI.getBoards();
       for (const board of boards) {
-        await hotelModel.findOneAndUpdate(
+        await boardModel.findOneAndUpdate(
           { _id: board._id },
           { $set: board },
           { upsert: true, session },
