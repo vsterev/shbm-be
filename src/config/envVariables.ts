@@ -17,6 +17,7 @@ if (
   !process.env.INTERLOOK_USER ||
   !process.env.INTERLOOK_PASSWORD ||
   !process.env.API_TOKEN_SECRET ||
+  !process.env.MONGO_URL ||
   !process.env.FRONTEND_URL
 ) {
   console.error(".env not fully set up!");
