@@ -40,12 +40,37 @@ yarn install
 pm2 deploy production setup
 ```
 
-4. Set up the environment variables:
+4. Set up initial information and the environment variables:
 
 ```bash
 cp example.env .env
 ```
+Setup mongo to work with replication 
+edit mongo.conf in ubunti it is located in /etc/monod.conf add row:
+```bash
+replication:
+  replSetName: "rs0"
+```
+restart mongod 
+```bash
+sudo systemctl restart mongod
+```
+should activate replica - run mongo client and type:
+```bash
+rs.initiate({
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "mongo1.example.com:27017" },
+    { _id: 1, host: "mongo2.example.com:27017" },
+    { _id: 2, host: "mongo3.example.com:27017" }
+  ]
+});
 
+```
+Set up inital information run 
+```bash
+yarn initial-seed
+```
 5. Build the project
 
 ```bash
