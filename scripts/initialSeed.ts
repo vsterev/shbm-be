@@ -29,7 +29,6 @@ async function seedInitialUser() {
     }
 
     await CronJobsService.getHotels();
-    await CronJobsService.getBoards();
     console.log("Cron jobs executed successfully");
   } catch (error) {
     console.error("Error creating user:", error);
