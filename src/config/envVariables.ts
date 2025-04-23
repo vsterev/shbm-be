@@ -16,13 +16,15 @@ if (
   !process.env.INTERLOOK_URL ||
   !process.env.INTERLOOK_USER ||
   !process.env.INTERLOOK_PASSWORD ||
-  !process.env.API_TOKEN_SECRET
+  !process.env.API_TOKEN_SECRET ||
+  !process.env.FRONTEND_URL
 ) {
   console.error(".env not fully set up!");
   process.exit(1);
 }
 
 export default {
+  FRONTEND_URL: process.env.FRONTEND_URL,
   NODE_ENV: process.env.NODE_ENV || "DEV",
   APP_PORT: Number(process.env.APP_PORT) || 3000,
   MONGO_URL: process.env.MONGO_URL,
