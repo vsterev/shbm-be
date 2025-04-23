@@ -54,5 +54,5 @@ export default defineConfig([
       "brace-style": "error",
     },
   },
-  globalIgnores(["dist/", "build/", "*.js", "*.cjs", "*.mjs"]),
+  globalIgnores(["dist/", "build/", ".github/","*.js", "*.cjs", "*.mjs", ".yml"]),
 ]);
