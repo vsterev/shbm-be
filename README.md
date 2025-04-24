@@ -1,4 +1,4 @@
-# Hotel Parser API
+# Solvex Hotel Bookings Manager API
 
 This project is a backend API for managing hotel bookings, accommodations, and integrations with external services like HotelService and Interlook. It is built using Node.js, TypeScript, and MongoDB, and follows a modular architecture with controllers, services, and models.
 
