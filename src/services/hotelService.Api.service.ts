@@ -3,7 +3,7 @@ import logger from "../utils/logger";
 import xml2js from "xml2js";
 import redis from "../config/redis.config";
 import hotelMap from "../models/accommodationMap";
-import hotel from "../models/hotel";
+import hotelModel from "../models/hotel";
 import {
   IBooking,
   IFlight,
@@ -127,7 +127,9 @@ export default class HotelServiceAPI {
 
     if (!hotelsName?.length) {
       hotelIds = (
-        await hotel.find({ "integrationSettings.apiName": [integrationName] })
+        await hotelModel.find({
+          "integrationSettings.apiName": [integrationName],
+        })
       )
         .map((hotel) => hotel._id)
         .filter((el) => el);

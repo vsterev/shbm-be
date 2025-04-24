@@ -31,7 +31,7 @@
     "start": "node build/src/server.js",
     "lint": "npx eslint --report-unused-disable-directives",
     "lint:fix": "npx eslint --report-unused-disable-directives --fix",
-    "prepare": "husky",
+    "prepare": "husky && husky install",
     "typescript-check": "tsc --noEmit",
     "initial-seed": "ts-node scripts/initialSeed.ts"
   },
@@ -58,10 +58,14 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
     "husky": "^9.1.7",
+    "lint-staged": ">=10",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.27.0"
+  },
+  "lint-staged": {
+    "*": ["eslint --cache --fix", "prettier --write"]
   }
 }

@@ -32,14 +32,24 @@ export default class BookingService {
                 .findOne({ _id: hts.hotelId })
                 .lean();
 
-              const hasVoucher = hts.log?.response?.Vocher;
+              const isBookingSend = await bookingModel
+                .find({
+                  bookingId: booking.bookingId,
+                  "hotelServices.serviceId": hts.serviceId,
+                  "hotelServices.log.response": { $exists: true },
+                })
+                .lean();
 
               if (
                 booking.action === "Changed" &&
                 hts.serviceName.match(/.*penalty.*/gim)
               ) {
                 booking.action = "Cancel";
-              } else if (booking.action === "Changed" && !hasVoucher) {
+              } else if (
+                // if booking was cheange before send to integration, in this case it will not be exists in integration app
+                booking.action === "Changed" &&
+                !isBookingSend?.length
+              ) {
                 booking.action = "New";
               }
 
