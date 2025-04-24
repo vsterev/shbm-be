@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.husky
+.vscode
+.github
+.env
+.prettierignore
+yarn.lock
+package.json

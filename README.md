@@ -8,6 +8,8 @@ This project is a backend API for managing hotel bookings, accommodations, and i
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
 - [Scripts](#scripts)
+- [Github Actions](#CI/CD)
+- [Git Hooks](#git-hooks)
 - [API Endpoints](#api-endpoints)
 - [License](#license)
 
@@ -23,11 +25,14 @@ This project is a backend API for managing hotel bookings, accommodations, and i
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-repo/hotel-parser-api.git
    cd hotel-parser-api
    '''
+
    ```
+
 2. Install dependencies:
 
 ```bash
@@ -45,17 +50,23 @@ pm2 deploy production setup
 ```bash
 cp example.env .env
 ```
-Setup mongo to work with replication 
+
+Setup mongo to work with replication
 edit mongo.conf in ubunti it is located in /etc/monod.conf add row:
+
 ```bash
 replication:
   replSetName: "rs0"
 ```
-restart mongod 
+
+restart mongod
+
 ```bash
 sudo systemctl restart mongod
 ```
+
 should activate replica - run mongo client and type:
+
 ```bash
 rs.initiate({
   _id: "rs0",
@@ -67,10 +78,13 @@ rs.initiate({
 });
 
 ```
-Set up inital information run 
+
+Set up inital information run
+
 ```bash
 yarn initial-seed
 ```
+
 5. Build the project
 
 ```bash
@@ -96,6 +110,50 @@ pm2 deploy ecosystem.config.cjs production
 - yarn start: Start the production server.
 - yarn lint: Run ESLint to check for code quality issues.
 - yarn lint:fix: Automatically fix linting issues.
+- yarn initial-seed: Populate intial information into mongo database.
+
+## Git Hooks
+
+This project uses Husky and lint-staged to maintain code quality and formatting before code is committed.
+🪝 Pre-Commit Hook
+On each commit, the following checks are automatically run only on staged files:
+
+- ✅ ESLint — catches common issues and potential bugs.
+- ✅ Prettier — ensures consistent code formatting.
+- ✅ (Optional) TypeScript type checking — for code safety.s
+  This ensures that only clean and formatted code reaches your repository.
+
+## ⚙️ GitHub Actions
+
+This project uses GitHub Actions to automate code quality checks, enforce a clean Git history, and handle post-merge tasks.
+
+✅ Pull Request Checks
+Three GitHub Actions are configured to streamline development and ensure code quality:
+
+1. TypeScript and Linter Validation
+
+   - Runs on every pull request.
+   - Ensures:
+     - TypeScript type checking
+     - ESLint static analysis
+   - Prevents type errors and enforces consistent coding standards.
+
+2. Enforce Fast-Forward Merges
+
+- (Optional / can be configured via branch protection)
+- Ensures pull requests are merged using fast-forward only, avoiding merge commits.
+- Maintains a clean, linear Git history.
+
+🚀 Automatic Post-Merge Actions 3. Post-Merge Automation
+
+- Runs automatically after a pull request is merged into the default branch.
+- Can be used for:
+  - Triggering deployment
+  - Running integration or end-to-end tests
+  - Notifying external services
+  - Syncing branches or documentation
+
+These workflows help automate your CI/CD pipeline and reduce manual steps after code is merged.
 
 ## API Endpoints
 
