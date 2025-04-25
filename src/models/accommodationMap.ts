@@ -50,6 +50,7 @@ const accommodationMapSchema = new mongoose.Schema(
       type: Map,
       of: RoomSchema,
     },
+    integrationName: String,
     // parserCode: {
     //   type: Number,
     // },
