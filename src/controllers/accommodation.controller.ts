@@ -6,7 +6,7 @@ import {
   Patch,
   Path,
   Post,
-  Query,
+  Queries,
   Res,
   Route,
   Security,
@@ -26,9 +26,16 @@ export class AccommodationController extends Controller {
   @Get("")
   @Security("jwt-passport")
   public async getVariants(
-    @Query() ilCode: number,
+    @Queries()
+    query: {
+      ilCode: number;
+      integrationName: string;
+    },
   ): Promise<IAccommodationMap | undefined> {
-    const result = await accomodationMap.findOne({ _id: ilCode });
+    const result = await accomodationMap.findOne({
+      _id: query.ilCode,
+      integrationName: query.integrationName,
+    });
 
     if (!result) {
       return {} as IAccommodationMap;
@@ -45,7 +52,7 @@ export class AccommodationController extends Controller {
       ilCode: number;
       checkIn: string;
       checkOut: string;
-      integrationCode: string;
+      integrationName: string;
     },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ) {
@@ -77,6 +84,7 @@ export class AccommodationController extends Controller {
           // [body.integrationCode as keyof IHotel['integrationSettings']]: hotel[body.integrationCode as keyof IHotel['integrationSettings']],
           // parserName,
           // parserHotelServer,
+          integrationName: body.integrationName,
         },
         { upsert: true, new: true },
       );
@@ -89,13 +97,19 @@ export class AccommodationController extends Controller {
   @Patch("")
   @Security("jwt-passport")
   public async hotelMapProperties(
-    @Body() body: { boards: any; rooms: any; hotelId: number },
+    @Body()
+    body: {
+      boards: any;
+      rooms: any;
+      hotelId: number;
+      integrationName: string;
+    },
   ): Promise<IAccommodationMap | undefined> {
     try {
       const { hotelId, boards, rooms } = body;
 
       const updateHotelMap = await accomodationMap.findOneAndUpdate(
-        { _id: hotelId },
+        { _id: hotelId, integrationName: body.integrationName },
         { boards, rooms },
         { new: true },
       );

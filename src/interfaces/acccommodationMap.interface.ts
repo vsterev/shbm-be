@@ -21,6 +21,7 @@ export interface IRoom {
 export interface IAccommodationMap {
   _id: number;
   hotelName: string;
+  integrationName: string;
   boards: { [key: string]: IBoard };
   rooms: { [key: string]: IRoom };
 }
