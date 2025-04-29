@@ -5,6 +5,7 @@ import {
   Get,
   Patch,
   Path,
+  Queries,
   Query,
   Res,
   Route,
@@ -84,9 +85,22 @@ export class HotelController extends Controller {
 
   @Get("")
   @Security("jwt-passport")
-  public async findHotelByname(@Query() hotelName: string): Promise<IHotel[]> {
-    const str = new RegExp(hotelName, "i");
-    return hotelModel.find({ name: str });
+  public async findHotelByname(
+    @Queries() query: { hotelName: string; integrationName?: string },
+  ): Promise<IHotel[]> {
+    const str = new RegExp(query.hotelName, "i");
+
+    return hotelModel.find({
+      name: str,
+      $or: [
+        {
+          "integrationSettings.apiName": query.integrationName,
+        },
+        {
+          integrationSettings: { $exists: false },
+        },
+      ],
+    });
   }
 
   @Patch("")
@@ -151,21 +165,29 @@ export class HotelController extends Controller {
           message: `Hotel allready was mapped for integration ${isHotelMapped.integrationSettings?.apiName}`,
         });
       }
+      const updateData: any = {
+        [`integrationSettings.hotelCode`]: body.integrationValue,
+        [`integrationSettings.apiName`]: body.integrationName,
+      };
+
+      if (integrationHotel.settings?.hotelServer) {
+        updateData["integrationSettings.hotelServer"] =
+          integrationHotel.settings.hotelServer;
+
+        if (integrationHotel.settings?.hotelServerId) {
+          updateData["integrationSettings.hotelServerId"] =
+            integrationHotel.settings.hotelServerId;
+        }
+
+        if (integrationHotel.settings?.serverName) {
+          updateData["integrationSettings.serverName"] =
+            integrationHotel.settings.serverName;
+        }
+      }
+
       const updatedHotel = await hotelModel.findOneAndUpdate(
         { _id: body.hotelId },
-        {
-          [`integrationSettings.hotelCode`]: body.integrationValue,
-          [`integrationSettings.apiName`]: body.integrationName,
-          ["integrationSettings.hotelServer"]:
-            integrationHotel.settings.hotelServer,
-          ["integrationSettings.hotelServerId"]:
-            integrationHotel.settings.hotelServerId,
-          ["integrationSettings.serverName"]:
-            integrationHotel.settings.serverName,
-          // [integration.code]: body.integrationValue,
-          // parserName: body.parserCode ? parserHotel?.Hotel : "",
-          // parserHotelServer: body.parserCode ? parserHotel?.HotelServer : "",
-        },
+        updateData,
         { new: true },
       );
 

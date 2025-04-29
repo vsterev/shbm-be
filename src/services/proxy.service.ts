@@ -83,6 +83,7 @@ export default class ProxyService {
   static async sendBookings(
     integrationName: string,
     bookings: IBookingPrepared[],
+    flag: "new" | "change" | "cancel",
   ): Promise<{
     errors: { booking: string; hotel: string }[];
     processedBookings: IBookingResponse[];
@@ -90,7 +91,7 @@ export default class ProxyService {
     try {
       const promiseResult = await fetch(
         `${envVariables.PROXY_URL}/bookings?` +
-          new URLSearchParams({ integrationName }).toString(),
+          new URLSearchParams({ integrationName, flag }).toString(),
         {
           method: "POST",
           headers: {

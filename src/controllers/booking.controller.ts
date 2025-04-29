@@ -4,7 +4,6 @@ import {
   Get,
   Post,
   Queries,
-  Query,
   Res,
   Route,
   Security,
@@ -262,7 +261,8 @@ export class BookingController extends Controller {
   @Security("jwt-passport")
   public async sendBookings(
     @Body() bookings: IBooking[],
-    @Query() integrationName: string,
+    @Queries()
+    query: { integrationName: string; flag: "new" | "change" | "cancel" },
   ) {
     try {
       const completeBookings: IBooking[] = bookings.map((booking) => ({
@@ -274,14 +274,12 @@ export class BookingController extends Controller {
 
       // eslint-disable-next-line
       let { errors, preparedBookings } =
-        await BookingService.bookingPrepareSend(
-          completeBookings,
-          integrationName,
-        );
+        await BookingService.bookingPrepareSend(completeBookings);
 
       const proxyResult = await ProxyService.sendBookings(
-        integrationName,
+        query.integrationName,
         preparedBookings,
+        query.flag,
       );
 
       const { processedBookings, errors: errorsResponse } = proxyResult;

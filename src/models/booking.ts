@@ -35,12 +35,21 @@ const bookingSchema = new mongoose.Schema(
         checkOut: String,
         status: String,
         note: String,
+        priceRemark: String,
         tourists: [
           {
             name: String,
             birthDate: String,
             sex: String,
             hotelServiceId: { type: Number, required: false },
+          },
+        ],
+        costOffersInfo: [
+          {
+            costOfferName: String,
+            costOfferDuration: Number,
+            costOfferDateBegin: String,
+            costOfferDateEnd: String,
           },
         ],
         log: {

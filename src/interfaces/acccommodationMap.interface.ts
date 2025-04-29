@@ -1,21 +1,17 @@
 export interface IBoard {
+  _id?: string;
   boardId: number;
   boardName: string;
-  parserCode?: string;
-  // integrations?: {
-  //   [integrationCode: string]: string;
-  // }
+  integrationCode?: string;
 }
 
 export interface IRoom {
+  _id?: string;
   roomTypeId: number;
   roomTypeName: string;
   roomCategoryId: number;
-  roomCategoryName: string;
-  parserCode?: string;
-  // integrations?: {
-  //   [integrationCode: string]: string;
-  // }
+  roomCategoryName?: string;
+  integrationCode?: string;
 }
 
 export interface IAccommodationMap {

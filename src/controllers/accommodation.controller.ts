@@ -15,10 +15,13 @@ import {
 } from "tsoa";
 import hotelModel from "../models/hotel";
 import accomodationMap from "../models/accommodationMap";
-import { IAccommodationMap } from "../interfaces/acccommodationMap.interface";
+import {
+  IAccommodationMap,
+  IBoard,
+  IRoom,
+} from "../interfaces/acccommodationMap.interface";
 import InterlookServiceAPI from "../services/interlook.Api.service";
 import logger from "../utils/logger";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 @Route("accommodations")
 @Tags("accommodations")
@@ -99,8 +102,8 @@ export class AccommodationController extends Controller {
   public async hotelMapProperties(
     @Body()
     body: {
-      boards: any;
-      rooms: any;
+      boards: { [key: string]: IBoard };
+      rooms: { [key: string]: IRoom };
       hotelId: number;
       integrationName: string;
     },

@@ -4,9 +4,10 @@ import { IHotel } from "../interfaces/hotel.interface";
 import { ICity } from "../interfaces/city.interface";
 import { IRoomCategory } from "../interfaces/roomCategory.interface";
 import { IRoomType } from "../interfaces/roomType.interface";
-import { IBoard } from "../interfaces/board.interface";
+import { IBoard } from "../interfaces/acccommodationMap.interface";
 import redis from "../config/redis.config";
 import logger from "../utils/logger";
+import { IRoom } from "../interfaces/acccommodationMap.interface";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const parser = new xml2js.Parser();
@@ -254,7 +255,10 @@ export default class InterlookServiceAPI {
     checkIn: string,
     checkOut: string,
     // apiCode: string,
-  ) {
+  ): Promise<{
+    roomVariants: { [key: string]: IRoom };
+    boardVariants: { [key: string]: IBoard };
+  }> {
     const requestStr = `
     <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
@@ -302,12 +306,10 @@ export default class InterlookServiceAPI {
     // const parserHotelServer = hotel.parserHotelServer;
     // const hotelName = hotel.name;
     // const hotelCode = hotel.code;
-    // const cityId = +hotel.resortId;
+    // const cityId = +hotel.numberresortId;
     // const cityName = hotel.resort;
-    const roomVariants: { [key: string]: any } = {};
-    const boardVariants: {
-      [key: string]: { boardId: number; boardName: string };
-    } = {};
+    const roomVariants: { [key: string]: IRoom } = {};
+    const boardVariants: { [key: string]: IBoard } = {};
 
     interlookCalculationVariants?.map(async (variant: any) => {
       const roomTypeId = +variant.RoomTypeId[0];
@@ -317,7 +319,7 @@ export default class InterlookServiceAPI {
       const boardId = variant.PansionId[0];
       const boardName = variant.PansionName[0];
       if (!Object.hasOwn(roomVariants, roomTypeId + "_" + roomCategoryId)) {
-        roomVariants[roomTypeId + "_" + roomCategoryId] = {};
+        roomVariants[roomTypeId + "_" + roomCategoryId] = {} as IRoom;
       }
 
       roomVariants[roomTypeId + "_" + roomCategoryId] = {

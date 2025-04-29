@@ -31,12 +31,12 @@ const hotelSchema = new mongoose.Schema(
     regionId: {
       type: Number,
     },
-    parserCode: { type: Number, required: false },
     integrationSettings: {
       apiName: String,
       hotelCode: Number,
       type: Map,
       of: mongoose.Schema.Types.Mixed,
+      required: false,
     },
   },
   { timestamps: true, strict: true },

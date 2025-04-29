@@ -6,6 +6,7 @@ import hotelMap from "../models/accommodationMap";
 import hotelModel from "../models/hotel";
 import {
   IBooking,
+  ICostOffersInfo,
   IFlight,
   IHotelServiceBooking,
   IMessage,
@@ -316,9 +317,16 @@ export default class HotelServiceAPI {
             const note = Object.hasOwn(el, "Notes") ? el.Notes[0] : undefined;
             const tourists = el.Tourists[0].TouristInfo;
             const costOffers = el.CostOffers[0];
+            const costOffersInfo: ICostOffersInfo[] = [];
             const priceRemark = Object.hasOwn(costOffers, "CostOfferInfo")
               ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 costOffers.CostOfferInfo?.map((el: any) => {
+                  costOffersInfo.push({
+                    costOfferName: el.CostOfferName[0] as string,
+                    costOfferDuration: +el.CostOfferDuration[0] as number,
+                    costOfferDateBegin: el.CostOfferDateBegin[0] as string,
+                    costOfferDateEnd: el.CostOfferDateEnd[0] as string,
+                  });
                   const str = el.CostOfferName[0];
                   const regexSPO = /spo/gi;
                   const regexEXTR = /extr/gi;
@@ -349,9 +357,7 @@ export default class HotelServiceAPI {
               const hotelServiceId = el.HotelServiceId[0] || undefined;
               touristArr.push({ name, birthDate, sex, hotelServiceId });
             });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const hotelServiceObject: any = {
+            const hotelServiceObject: IHotelServiceBooking = {
               serviceId,
               serviceName,
               bookingCode: bookingName + "-" + serviceId,
@@ -378,6 +384,7 @@ export default class HotelServiceAPI {
               // marketName,
               // messages: messageArr,
               priceRemark,
+              costOffersInfo,
             };
             services.push(hotelServiceObject);
           });
