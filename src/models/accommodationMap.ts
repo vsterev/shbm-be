@@ -4,7 +4,7 @@ import City from "./city";
 const BoardSchema = new mongoose.Schema({
   boardId: { type: Number, required: true },
   boardName: { type: String, required: true },
-  parserCode: { type: String },
+  integrationCode: { type: String },
 });
 
 const RoomSchema = new mongoose.Schema({
@@ -12,7 +12,7 @@ const RoomSchema = new mongoose.Schema({
   roomTypeName: { type: String },
   roomCategoryId: { type: Number },
   roomCategoryName: { type: String },
-  parserCode: { type: String },
+  integrationCode: { type: String },
 });
 
 const accommodationMapSchema = new mongoose.Schema(
@@ -51,15 +51,6 @@ const accommodationMapSchema = new mongoose.Schema(
       of: RoomSchema,
     },
     integrationName: String,
-    // parserCode: {
-    //   type: Number,
-    // },
-    // parserName: {
-    //   type: String,
-    // },
-    // parserHotelServer: {
-    //   type: String,
-    // },
   },
   { timestamps: true, strict: true },
 );

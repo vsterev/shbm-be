@@ -8,8 +8,6 @@ import {
 import hotelMap from "../models/accommodationMap";
 import EmailService from "./email.service";
 import logger from "../utils/logger";
-import ProxyService from "./proxy.service";
-import { IBoard, IRoom } from "../interfaces/acccommodationMap.interface";
 import hotelModel from "../models/hotel";
 import bookingModel from "../models/booking";
 import HotelServiceAPI from "./hotelService.Api.service";
@@ -17,13 +15,9 @@ import HotelServiceAPI from "./hotelService.Api.service";
 export default class BookingService {
   static async bookingPrepareSend(
     bookings: IBooking[],
-    integrationName: string,
   ): Promise<{ preparedBookings: IBookingPrepared[]; errors: number }> {
     try {
       let errors = 0;
-      const integration = await ProxyService.getIntegration(integrationName);
-      const integrationCode = integration?.code;
-
       const preparedBookings: IBookingPrepared[] = await Promise.all(
         bookings.map(async (booking) => {
           const preparedHotelServices = await Promise.all(
@@ -59,12 +53,8 @@ export default class BookingService {
 
               if (
                 !mappings ||
-                !mappings.rooms[hts.roomMapCode]?.[
-                  integrationCode as keyof IRoom
-                ] ||
-                !mappings.boards[hts.pansionId]?.[
-                  integrationCode as keyof IBoard
-                ]
+                !mappings.rooms[hts.roomMapCode]?.integrationCode ||
+                !mappings.boards[hts.pansionId]?.integrationCode
               ) {
                 await EmailService.sendEmail({
                   type: "error",
@@ -80,13 +70,9 @@ export default class BookingService {
               return {
                 ...hts,
                 roomIntegrationCode:
-                  mappings.rooms[hts.roomMapCode]?.[
-                    integrationCode as keyof IRoom
-                  ],
+                  mappings.rooms[hts.roomMapCode].integrationCode,
                 boardIntegrationCode:
-                  mappings.boards[hts.pansionId]?.[
-                    integrationCode as keyof IBoard
-                  ],
+                  mappings.boards[hts.pansionId]?.integrationCode,
                 integrationSettings: hotel?.integrationSettings,
               } as IBookingHotelServicePrepared;
             }),

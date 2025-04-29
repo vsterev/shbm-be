@@ -63,6 +63,13 @@ export interface ITourist {
   sex?: string;
   hotelServiceId?: number;
 }
+
+export interface ICostOffersInfo {
+  costOfferName: string;
+  costOfferDuration: number;
+  costOfferDateBegin: string;
+  costOfferDateEnd: string;
+}
 export interface IHotelServiceBooking {
   serviceId: number;
   serviceName: string;
@@ -85,6 +92,7 @@ export interface IHotelServiceBooking {
   note?: string;
   tourists: ITourist[];
   priceRemark?: string;
+  costOffersInfo: ICostOffersInfo[];
   log?: {
     sendDate?: Date;
     // esplicit any type is used here to allow for flexibility in the data structure
