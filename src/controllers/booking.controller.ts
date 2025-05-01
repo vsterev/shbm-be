@@ -95,16 +95,19 @@ export class BookingController extends Controller {
       bookingNumber: string;
       confirmationNumber: string;
       message: string;
+      partnerBookingId?: string;
     },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ): Promise<string> {
     const booking = await bookingModel
       .findOne({
         "hotelServices.serviceId": Number(body.bookingNumber.split("-")[1]),
+        "hotelServices.log.integrationId": body.partnerBookingId || "",
       })
       .sort({ dateInputed: -1 })
       .lean();
-    if (!booking || !booking.hotelServices[0]) {
+
+    if (!booking) {
       throw notFoundRes(404, {
         error: "Hotel service information is missing in the booking.",
       });
@@ -122,6 +125,7 @@ export class BookingController extends Controller {
       manual: { confirmed: body },
       sendDate: new Date(),
       integrationStatus: "confirmed",
+      integrationId: body.partnerBookingId || "",
     };
 
     if (newBooking.hotelServices[0]) {
@@ -146,12 +150,31 @@ export class BookingController extends Controller {
     return "booking confirmation was received";
   }
 
+  @Get("partner")
+  @Security("api-token")
+  public async findPartnerBooking(
+    @Queries() query: { bookingCode: string; partnerId: string },
+  ): Promise<boolean> {
+    const bookingExists = await bookingModel.findOne({
+      "hotelServices.bookingCode": query.bookingCode,
+      "hotelServices.log.integrationId": query.partnerId,
+    });
+
+    if (!bookingExists) {
+      return false;
+    }
+
+    return true;
+  }
+
   @Post("deny")
+  @Security("api-token")
   public async denyBooking(
     @Body()
     body: {
       bookingNumber: string;
       message: string;
+      partnerBookingId?: string;
     },
     @Res() notFoundRes: TsoaResponse<404, { error: string }>,
   ): Promise<string> {
@@ -160,11 +183,12 @@ export class BookingController extends Controller {
         "hotelServices.serviceId": Number(
           Number(body.bookingNumber.split("-")[1]),
         ),
+        "hotelServices.log.integrationId": body.partnerBookingId || "",
       })
       .sort({ dateInputed: -1 })
       .lean();
 
-    if (!booking || !booking.hotelServices[0]) {
+    if (!booking) {
       throw notFoundRes(404, {
         error: "Hotel service information is missing in the booking.",
       });
@@ -183,6 +207,7 @@ export class BookingController extends Controller {
       manual: { denied: body },
       sendDate: new Date(),
       integrationStatus: "denied",
+      integrationId: body.partnerBookingId || "",
     };
 
     let returnStr = "";
@@ -263,6 +288,7 @@ export class BookingController extends Controller {
     @Body() bookings: IBooking[],
     @Queries()
     query: { integrationName: string; flag: "new" | "change" | "cancel" },
+    @Res() syncFailed: TsoaResponse<422, { error: string }>,
   ) {
     try {
       const completeBookings: IBooking[] = bookings.map((booking) => ({
@@ -320,7 +346,12 @@ export class BookingController extends Controller {
         cancelled: 0,
       };
     } catch (error) {
-      logger.error(error);
+      if (error instanceof Error) {
+        logger.error(error.message);
+      } else {
+        logger.error("An unknown error occurred");
+      }
+      return syncFailed(422, { error: (error as unknown as Error).message });
     }
   }
 }
