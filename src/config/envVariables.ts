@@ -6,7 +6,7 @@ if (!fs.existsSync(".env")) {
   process.exit(1);
 }
 dotenv.config();
-
+if (
   !process.env.HOTEL_SERVICE_URL ||
   !process.env.HOTEL_SERVICE_USER ||
   !process.env.HOTEL_SERVICE_PASSWORD ||
@@ -31,7 +31,6 @@ export default {
   REDIS_PORT: Number(process.env.REDIS_PORT) || 6379,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD,
   REDIS_DB: Number(process.env.REDIS_DB) || 0,
-
   HOTEL_SERVICE_URL: process.env.HOTEL_SERVICE_URL,
   HOTEL_SERVICE_USER: process.env.HOTEL_SERVICE_USER,
   HOTEL_SERVICE_PASSWORD: process.env.HOTEL_SERVICE_PASSWORD,
