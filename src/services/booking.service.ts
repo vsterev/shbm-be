@@ -33,7 +33,6 @@ export default class BookingService {
                   "hotelServices.log.response": { $exists: true },
                 })
                 .lean();
-
               if (
                 booking.action === "Changed" &&
                 hts.serviceName.match(/.*penalty.*/gim)
@@ -45,6 +44,10 @@ export default class BookingService {
                 !isBookingSend?.length
               ) {
                 booking.action = "New";
+              }
+
+              if (booking.action === "Cancel") {
+                hts.log = isBookingSend[0].hotelServices[0].log;
               }
 
               const mappings = await hotelMap
@@ -143,11 +146,41 @@ export default class BookingService {
                   break;
 
                 case "wait":
+                  if (hts.status === "Confirmed") {
+                    // if Il default status is confirmed and integration status is waiting no status will be changed in IL
+                    await HotelServiceAPI.manageBooking(hts.serviceId);
+
+                    await EmailService.sendEmail({
+                      type: "pendingApproval",
+                      booking: booking.bookingName || "",
+                      hotel: hts.hotel || "",
+                    });
+                    break;
+                  }
+
+                  //should hide booking from queue
                   await EmailService.sendEmail({
                     type: "waiting",
                     booking: booking.bookingName || "",
                     hotel: hts.hotel || "",
                   });
+
+                  await HotelServiceAPI.manageBooking(
+                    hts.serviceId,
+                    "wait",
+                    hts.confirmationNumber || "",
+                    hts.msgConfirmation || "",
+                  );
+                  break;
+
+                case "cancelled":
+                  await EmailService.sendEmail({
+                    type: "cancellation",
+                    booking: booking.bookingName || "",
+                    hotel: hts.hotel || "",
+                  });
+                  //should hide booking from queue
+                  await HotelServiceAPI.manageBooking(hts.serviceId, "confirm");
                   break;
 
                 default:

@@ -5,8 +5,8 @@ import logger from "../utils/logger";
 type IEmailType =
   | "error"
   | "confirmation"
-  | "cancelation"
-  | "rejected"
+  | "cancellation"
+  | "pendingApproval"
   | "notConfirmed"
   | "denied"
   | "waiting";
@@ -67,25 +67,25 @@ export default class EmailService {
         contentStr = `Mapping error -> accommodation and boards are not mapped to hotel <b>${hotel}</b> in booking <b>${booking}</b>.
          <br>The reservations can not to be sent to "Hotel Parser" system, please check and correct the mappings of hotel <b>${hotel}</b> !<br>Hotel Booking System !`;
         break;
-      case "cancelation":
+      case "cancellation":
         subjectStr = `HBS - booking CANCELATION ${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>CANCELED</b> from Hotel Parser System!<br> Hotel Booking System !`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} is <b>CANCELED</b> from Integration System!<br> Hotel Booking System !`;
         break;
-      case "rejected":
-        subjectStr = `HBS - booking NOT CONFIRMED ${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>NOT CONFIRMED</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will not be change !`;
+      case "pendingApproval":
+        subjectStr = `HBS - booking waiting approval ${booking}`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} is <b>Pending Approval</b> from Integration System!<br> Hotel Booking System. Status in IL will not be change !`;
         break;
       case "notConfirmed":
         subjectStr = `HBS - booking Not Confirmed ${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>Not Confirmed</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will be change to "Not Confirmed" !`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} is <b>Not Confirmed</b> from Integration System!<br> Hotel Booking System. Status in IL will be change to "Not Confirmed" !`;
         break;
       case "denied":
         subjectStr = `HBS - booking DENIED${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>DENIED</b> from Hotel Parser System!<br> Hotel Booking System. Status in IL will be change to "Wait !`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} is <b>DENIED</b> from Integration System!<br> Hotel Booking System. Status in IL will be change to "Wait !`;
         break;
       case "waiting":
         subjectStr = `HBS - booking WAITING${booking}`;
-        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} are <b>WAITING</b> in Hotel Parser System!<br> Hotel Booking System. Status in IL will not be changed to "Wait !`;
+        contentStr = `The Booking <b>${booking}</b> ${!!hotel && `for hotel ${hotel} are`} is <b>WAITING</b> in Integration System!<br> Hotel Booking System. Status in IL will not be changed to "Wait !`;
         break;
     }
     return { subject: subjectStr, content: contentStr };

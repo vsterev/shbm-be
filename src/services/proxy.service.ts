@@ -88,27 +88,22 @@ export default class ProxyService {
     errors: { booking: string; hotel: string }[];
     processedBookings: IBookingResponse[];
   }> {
-    try {
-      const promiseResult = await fetch(
-        `${envVariables.PROXY_URL}/bookings?` +
-          new URLSearchParams({ integrationName, flag }).toString(),
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `BEARER ${envVariables.API_TOKEN}`,
-          },
-          body: JSON.stringify(bookings),
+    const promiseResult = await fetch(
+      `${envVariables.PROXY_URL}/bookings?` +
+        new URLSearchParams({ integrationName, flag }).toString(),
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `BEARER ${envVariables.API_TOKEN}`,
         },
-      );
-      if (!promiseResult.ok) {
-        const errorText = await promiseResult.text();
-        throw new Error(`Error: ${promiseResult.status} - ${errorText}`);
-      }
-      return promiseResult.json();
-    } catch (error) {
-      console.log(error);
-      throw new Error("Failed to send bookings");
+        body: JSON.stringify(bookings),
+      },
+    );
+    if (!promiseResult.ok) {
+      const errorText = await promiseResult.text();
+      throw new Error(`Error: ${promiseResult.status} - ${errorText}`);
     }
+    return promiseResult.json();
   }
 }

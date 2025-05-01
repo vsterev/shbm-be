@@ -68,9 +68,10 @@ const bookingSchema = new mongoose.Schema(
                 required: false,
               },
               integrationStatus: {
-                enum: ["wait", "confirmed", "denied"],
+                enum: ["wait", "confirmed", "denied", "cancelled"],
                 type: String,
               },
+              integrationId: String,
             },
             { _id: false },
           ),

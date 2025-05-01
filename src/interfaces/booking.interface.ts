@@ -107,7 +107,8 @@ export interface IHotelServiceBooking {
         confirmationNumber?: string;
       };
     };
-    integrationStatus?: "wait" | "confirmed" | "denied";
+    integrationStatus?: "wait" | "confirmed" | "denied" | "cancelled";
+    integrationId: string;
   };
 }
 export interface IFlight {
