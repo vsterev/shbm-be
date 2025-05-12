@@ -33,7 +33,7 @@ const hotelSchema = new mongoose.Schema(
     },
     integrationSettings: {
       apiName: String,
-      hotelCode: Number,
+      hotelId: Number,
       type: Map,
       of: mongoose.Schema.Types.Mixed,
       required: false,

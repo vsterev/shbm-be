@@ -18,7 +18,7 @@ const bookingSchema = new mongoose.Schema(
         //само един сервиз от резервация
         serviceId: Number,
         serviceName: String,
-        hotelId: Number,
+        hotelId: { type: Number, ref: "Hotel" },
         bookingCode: String,
         mapCode: String,
         hotel: String,

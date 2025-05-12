@@ -137,7 +137,7 @@ export type IBookingHotelServicePrepared = IHotelServiceBooking & {
   boardIntegrationCode?: string;
   integrationSettings?: {
     apiName: string;
-    hotelCode: string;
+    hotelId: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   };

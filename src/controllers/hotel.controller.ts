@@ -64,7 +64,7 @@ export class HotelController extends Controller {
         .lean();
 
       const codesFromInterlookHotelsApi = interlookHotelsApi.map((hotel) =>
-        Number(hotel.integrationSettings?.hotelCode),
+        Number(hotel.integrationSettings?.hotelId),
       );
 
       const mappedIntegrationHotels: (HotelResponse & {
@@ -141,7 +141,7 @@ export class HotelController extends Controller {
       }
 
       const integrationCodeIsAssigned = await hotelModel.findOne({
-        ["integrationSettings.hotelCode"]: body.integrationValue,
+        ["integrationSettings.hotelId"]: body.integrationValue,
         _id: { $ne: body.hotelId },
       });
 
@@ -152,7 +152,7 @@ export class HotelController extends Controller {
       }
 
       const isHotelMapped = await hotelModel.findOne({
-        ["integrationSettings.hotelCode"]: {
+        ["integrationSettings.hotelId"]: {
           $exists: true,
           $nin: [null, "", 0],
         },
@@ -166,24 +166,14 @@ export class HotelController extends Controller {
         });
       }
       const updateData: any = {
-        [`integrationSettings.hotelCode`]: body.integrationValue,
+        [`integrationSettings.hotelId`]: body.integrationValue,
         [`integrationSettings.apiName`]: body.integrationName,
       };
 
-      if (integrationHotel.settings?.hotelServer) {
-        updateData["integrationSettings.hotelServer"] =
-          integrationHotel.settings.hotelServer;
-
-        if (integrationHotel.settings?.hotelServerId) {
-          updateData["integrationSettings.hotelServerId"] =
-            integrationHotel.settings.hotelServerId;
-        }
-
-        if (integrationHotel.settings?.serverName) {
-          updateData["integrationSettings.serverName"] =
-            integrationHotel.settings.serverName;
-        }
-      }
+      Object.keys(integrationHotel.settings || {}).forEach((key) => {
+        updateData[`integrationSettings.${key}`] =
+          integrationHotel.settings[key];
+      });
 
       const updatedHotel = await hotelModel.findOneAndUpdate(
         { _id: body.hotelId },
