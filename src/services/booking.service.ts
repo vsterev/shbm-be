@@ -33,6 +33,7 @@ export default class BookingService {
                   "hotelServices.log.response": { $exists: true },
                 })
                 .lean();
+
               if (
                 booking.action === "Changed" &&
                 hts.serviceName.match(/.*penalty.*/gim)
