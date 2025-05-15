@@ -181,7 +181,7 @@ export default class HotelServiceAPI {
 
   public static async manageBooking(
     serviceId: number,
-    status?: "confirm" | "wait" | "notConfirmed" | "denied",
+    status?: "confirm" | "wait" | "notConfirmed",
     confirmationNumber?: string,
     message?: string,
   ): Promise<unknown> {
@@ -190,7 +190,7 @@ export default class HotelServiceAPI {
       confirm: 2,
       wait: 1,
       notConfirmed: 4,
-      denied: 3,
+      denied: 4,
     };
 
     const xmlString = `<soap:Envelope

@@ -22,6 +22,10 @@ import logger from "../utils/logger";
 import BookingService from "../services/booking.service";
 import ProxyService from "../services/proxy.service";
 
+interface IPartnerStatusUpdate {
+  status: "success" | "failure";
+  message: string;
+}
 @Route("bookings")
 @Tags("bookings")
 export class BookingController extends Controller {
@@ -97,57 +101,81 @@ export class BookingController extends Controller {
       message: string;
       partnerBookingId?: string;
     },
-    @Res() notFoundRes: TsoaResponse<404, { error: string }>,
-  ): Promise<string> {
-    const booking = await bookingModel
-      .findOne({
-        "hotelServices.serviceId": Number(body.bookingNumber.split("-")[1]),
-        "hotelServices.log.integrationId": body.partnerBookingId || "",
-      })
-      .sort({ dateInputed: -1 })
-      .lean();
+    @Res()
+    errorConfirmed: TsoaResponse<422, IPartnerStatusUpdate>,
+  ): Promise<IPartnerStatusUpdate> {
+    try {
+      // eslint-disable-next-line
+      const [bookingName, serviceId] = body.bookingNumber.split("-");
+      const booking = await bookingModel
+        .findOne({
+          "hotelServices.serviceId": Number(serviceId),
+          ...(body.partnerBookingId && {
+            "hotelServices.log.integrationId": body.partnerBookingId,
+          }),
+        })
+        .sort({ dateInputed: -1 })
+        .lean();
 
-    if (!booking) {
-      throw notFoundRes(404, {
-        error: "Hotel service information is missing in the booking.",
+      if (!booking) {
+        throw Error(
+          `No booking found for serviceId ${serviceId} and partnerBookingId ${body.partnerBookingId}`,
+        );
+      }
+
+      const hotelService = booking.hotelServices.find(
+        (hts) => hts.serviceId === Number(serviceId),
+      );
+
+      if (!hotelService) {
+        throw new Error("Hotel service not found.");
+      }
+
+      const hotel = hotelService.hotel;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id, ...newBooking } = booking;
+
+      newBooking.dateInputed = new Date();
+
+      newBooking.hotelServices[0].log = {
+        send: {} as IParserBooking,
+        response: {} as IParserBookingResponse,
+        manual: { confirmed: body },
+        sendDate: new Date(),
+        integrationStatus: "confirmed",
+        integrationId: body.partnerBookingId || "",
+      };
+
+      if (newBooking.hotelServices[0]) {
+        newBooking.hotelServices[0].status = "Confirmed";
+      }
+
+      await bookingModel.create(newBooking);
+
+      await HotelServiceAPI.manageBooking(
+        Number(serviceId),
+        "confirm",
+        body.confirmationNumber,
+        body.message,
+      );
+
+      await EmailService.sendEmail({
+        type: "confirmation",
+        booking: newBooking.bookingName,
+        hotel,
+      });
+
+      return {
+        status: "success",
+        message: "booking confirmation was received",
+      };
+    } catch (error) {
+      logger.error(error);
+      return errorConfirmed(422, {
+        status: "failure",
+        message: (error as Error).message,
       });
     }
-
-    const { serviceId, hotel } = booking.hotelServices[0];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...newBooking } = booking;
-
-    newBooking.dateInputed = new Date();
-
-    newBooking.hotelServices[0].log = {
-      send: {} as IParserBooking,
-      response: {} as IParserBookingResponse,
-      manual: { confirmed: body },
-      sendDate: new Date(),
-      integrationStatus: "confirmed",
-      integrationId: body.partnerBookingId || "",
-    };
-
-    if (newBooking.hotelServices[0]) {
-      newBooking.hotelServices[0].status = "Confirmed";
-    }
-
-    await bookingModel.create(newBooking);
-
-    await HotelServiceAPI.manageBooking(
-      serviceId,
-      "confirm",
-      body.confirmationNumber,
-      body.message,
-    );
-
-    await EmailService.sendEmail({
-      type: "confirmation",
-      booking: newBooking.bookingName,
-      hotel,
-    });
-
-    return "booking confirmation was received";
   }
 
   @Get("partner")
@@ -176,81 +204,102 @@ export class BookingController extends Controller {
       message: string;
       partnerBookingId?: string;
     },
-    @Res() notFoundRes: TsoaResponse<404, { error: string }>,
-  ): Promise<string> {
-    const booking = await bookingModel
-      .findOne({
-        "hotelServices.serviceId": Number(
-          Number(body.bookingNumber.split("-")[1]),
-        ),
-        "hotelServices.log.integrationId": body.partnerBookingId || "",
-      })
-      .sort({ dateInputed: -1 })
-      .lean();
+    @Res()
+    errorUpdate: TsoaResponse<422, IPartnerStatusUpdate>,
+  ): Promise<IPartnerStatusUpdate> {
+    try {
+      // eslint-disable-next-line
+    const [bookingName, serviceId] = body.bookingNumber.split("-");
 
-    if (!booking) {
-      throw notFoundRes(404, {
-        error: "Hotel service information is missing in the booking.",
-      });
-    }
+      const booking = await bookingModel
+        .findOne({
+          "hotelServices.serviceId": Number(Number(serviceId)),
+          ...(body.partnerBookingId && {
+            "hotelServices.log.integrationId": body.partnerBookingId,
+          }),
+        })
+        .sort({ dateInputed: -1 })
+        .lean();
 
-    const { serviceId, hotel, status } = booking.hotelServices[0];
+      if (!booking) {
+        throw Error(
+          `No booking found for serviceId ${serviceId} and partnerBookingId ${body.partnerBookingId}`,
+        );
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...newBooking } = booking;
-
-    newBooking.dateInputed = new Date();
-
-    newBooking.hotelServices[0].log = {
-      send: {} as IParserBooking,
-      response: {} as IParserBookingResponse,
-      manual: { denied: body },
-      sendDate: new Date(),
-      integrationStatus: "denied",
-      integrationId: body.partnerBookingId || "",
-    };
-
-    let returnStr = "";
-
-    if (status === "Wait" && newBooking.hotelServices[0]) {
-      newBooking.hotelServices[0].status = "notConfirmed";
-
-      await HotelServiceAPI.manageBooking(
-        serviceId,
-        "notConfirmed",
-        "OTKAZ!",
-        body.message,
+      // const { serviceId, hotel, status } = booking.hotelServices[0];
+      const hotelSerivece = booking.hotelServices.find(
+        (hts) => hts.serviceId === Number(serviceId),
       );
 
-      await EmailService.sendEmail({
-        type: "notConfirmed",
-        booking: newBooking.bookingName,
-        hotel,
+      if (!hotelSerivece) {
+        throw Error("Hotel service information is missing in the booking.");
+      }
+
+      const { hotel, status } = hotelSerivece;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id, ...newBooking } = booking;
+
+      newBooking.dateInputed = new Date();
+
+      newBooking.hotelServices[0].log = {
+        send: {} as IParserBooking,
+        response: {} as IParserBookingResponse,
+        manual: { denied: body },
+        sendDate: new Date(),
+        integrationStatus: "denied",
+        integrationId: body.partnerBookingId || "",
+      };
+
+      let returnStr = "";
+
+      if (status === "Wait" && newBooking.hotelServices[0]) {
+        newBooking.hotelServices[0].status = "notConfirmed";
+
+        await HotelServiceAPI.manageBooking(
+          Number(serviceId),
+          "notConfirmed",
+          "OTKAZ!",
+          body.message,
+        );
+
+        await EmailService.sendEmail({
+          type: "notConfirmed",
+          booking: newBooking.bookingName,
+          hotel,
+        });
+
+        returnStr = "booking Not confirmed status was received";
+      } else {
+        booking.hotelServices[0].status = "Wait";
+
+        await HotelServiceAPI.manageBooking(
+          Number(serviceId),
+          "wait",
+          "OTKAZ!",
+          body.message,
+        );
+
+        await EmailService.sendEmail({
+          type: "denied",
+          booking: newBooking.bookingName,
+          hotel,
+        });
+
+        returnStr = "booking denied status was received";
+      }
+
+      await bookingModel.create(newBooking);
+
+      return { status: "success", message: returnStr };
+    } catch (error) {
+      logger.error(error);
+      return errorUpdate(422, {
+        status: "failure",
+        message: (error as Error).message,
       });
-
-      returnStr = "booking Not confirmed status was received";
-    } else {
-      booking.hotelServices[0].status = "Wait";
-
-      await HotelServiceAPI.manageBooking(
-        serviceId,
-        "wait",
-        "OTKAZ!",
-        body.message,
-      );
-
-      await EmailService.sendEmail({
-        type: "denied",
-        booking: newBooking.bookingName,
-        hotel,
-      });
-
-      returnStr = "booking denied status was received";
     }
-
-    await bookingModel.create(newBooking);
-
-    return returnStr;
   }
 
   @Get("")
@@ -324,6 +373,12 @@ export class BookingController extends Controller {
         ),
       ).length;
 
+      const cancelledBookingsCount = processedBookings.filter((booking) =>
+        booking.hotelServices.some(
+          (hts) => hts.log?.integrationStatus === "cancelled",
+        ),
+      ).length;
+
       errors = errors + errorsResponse.length;
 
       await Promise.all(
@@ -343,7 +398,7 @@ export class BookingController extends Controller {
         sended: sendedBookingsCount,
         confirmed: confirmedBookingsCount,
         notConfirmed: deniedBookingsCount,
-        cancelled: 0,
+        cancelled: cancelledBookingsCount,
       };
     } catch (error) {
       if (error instanceof Error) {
