@@ -33,7 +33,6 @@ export default class BookingService {
                   "hotelServices.log.response": { $exists: true },
                 })
                 .lean();
-
               if (
                 booking.action === "Changed" &&
                 hts.serviceName.match(/.*penalty.*/gim)
@@ -48,7 +47,7 @@ export default class BookingService {
               }
 
               if (booking.action === "Cancel") {
-                hts.log = isBookingSend[0].hotelServices[0].log;
+                hts.log = isBookingSend[0]?.hotelServices?.[0].log;
               }
 
               const mappings = await hotelMap
@@ -115,6 +114,7 @@ export default class BookingService {
         await Promise.all(
           booking.hotelServices.map(
             async (hts: IBookingHotelServiceProxyResponse) => {
+              const message = `send ${new Date().toISOString().substring(0, 10)}: ${hts.msgConfirmation || ""}`;
               switch (hts.log?.integrationStatus) {
                 case "confirmed":
                   await EmailService.sendEmail({
@@ -127,7 +127,7 @@ export default class BookingService {
                     hts.serviceId,
                     "confirm",
                     hts.confirmationNumber || "",
-                    hts.msgConfirmation || "",
+                    message,
                   );
                   break;
 
@@ -138,12 +138,12 @@ export default class BookingService {
                     hotel: hts.hotel || "",
                   });
 
-                  await HotelServiceAPI.manageBooking(
-                    hts.serviceId,
-                    "denied",
-                    hts.confirmationNumber || "",
-                    hts.msgConfirmation || "",
-                  );
+                  // await HotelServiceAPI.manageBooking(
+                  //   hts.serviceId,
+                  //   "denied",
+                  //   "ERROR SENDING",
+                  //   message,
+                  // );
                   break;
 
                 case "wait":
@@ -170,7 +170,7 @@ export default class BookingService {
                     hts.serviceId,
                     "wait",
                     hts.confirmationNumber || "",
-                    hts.msgConfirmation || "",
+                    message,
                   );
                   break;
 
